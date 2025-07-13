@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useContext } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { Sun, Moon, LogOut, BarChart2, Car, DollarSign, Sparkles, Star } from 'lucide-react';
 import { AppContext } from '@/context/app-context';
 import GeminiSuggestionModal from '@/components/gemini-modal';
@@ -54,7 +55,7 @@ function RideRequests() {
             <h2 className="text-2xl font-bold mb-4">Pedido de Viagem</h2>
             <div className="bg-gray-800 rounded-lg overflow-hidden">
                 <div className="h-64 w-full">
-                     <MapComponent center={rideRequest.from.position} rideRequest={rideRequest} />
+                     <Image src="https://placehold.co/800x600.png" alt="Map placeholder" width={800} height={600} className="w-full h-full object-cover" data-ai-hint="map city" />
                 </div>
                 <div className="p-4">
                     <div className="flex justify-between items-start">

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useContext } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { AppContext } from '@/context/app-context';
 import { MapPin, DollarSign, User, Star, Sun, Moon, LogOut, Smartphone, CreditCard, Banknote, Sparkles } from 'lucide-react';
 import PaymentOption from '@/components/payment-option';
@@ -60,7 +61,7 @@ export default function PassengerView() {
       </div>
       
       <div className="flex-grow z-10">
-        <MapComponent center={userPosition} drivers={mockDrivers} userPos={userPosition} />
+        <Image src="https://placehold.co/800x600.png" alt="Map placeholder" layout="fill" objectFit="cover" data-ai-hint="map city" />
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 bg-gray-900 p-4 rounded-t-2xl shadow-lg z-20">
