@@ -19,6 +19,7 @@ import {
   ClipboardCheck,
   ArrowLeft,
   History,
+  PhoneCall,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -31,6 +32,8 @@ import {
   YAxis,
   Tooltip,
 } from 'recharts';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+
 
 const driverStats = {
   todayEarnings: 156.5,
@@ -122,9 +125,27 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
         <button className="bg-white p-3 rounded-full shadow-lg"><Layers className="text-black" /></button>
       </div>
       
-      <div className="absolute bottom-1/2 left-4 z-10">
-          <button className="bg-white p-3 rounded-full shadow-lg"><Shield className="text-blue-600" /></button>
-      </div>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <div className="absolute bottom-1/2 left-4 z-10">
+              <button className="bg-white p-3 rounded-full shadow-lg"><Shield className="text-red-600" /></button>
+          </div>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ligar para a polícia?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação tentará iniciar uma chamada para o número de emergência 190. Use apenas em caso de emergência real.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => window.location.href = 'tel:190'}>
+              <PhoneCall className="mr-2" /> Ligar para 190
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
 
       {/* Bottom Sheet */}
@@ -323,3 +344,5 @@ export default function DriverView() {
     </div>
   );
 }
+
+    
