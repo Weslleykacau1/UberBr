@@ -19,12 +19,13 @@ const DynamicMap = dynamic(() => import('@/components/dynamic-map'), {
     loading: () => <div className="bg-muted w-full h-full flex items-center justify-center"><p>Carregando mapa...</p></div>
 });
 
+type RideOption = {
+  name: string;
+  price: string;
+  eta: string;
+  icon: string;
+};
 
-const rideOptions = [
-  { name: 'Corrida X', price: 'R$ 13,90', eta: '5 min', icon: 'https://placehold.co/40x40.png' },
-  { name: 'Comfort', price: 'R$ 18,50', eta: '7 min', icon: 'https://placehold.co/40x40.png' },
-  { name: 'Black', price: 'R$ 25,00', eta: '6 min', icon: 'https://placehold.co/40x40.png' },
-];
 
 const mockRideHistory = [
   {
@@ -65,14 +66,33 @@ const mockRideHistory = [
 
 function RideRequestView({ from, to, onBack }: { from: string, to: string, onBack: () => void }) {
     const [step, setStep] = useState(1);
-    const [selectedRide, setSelectedRide] = useState<typeof rideOptions[0] | null>(null);
+    const [rideOptions, setRideOptions] = useState<RideOption[]>([]);
+    const [selectedRide, setSelectedRide] = useState<RideOption | null>(null);
     const [paymentMethod, setPaymentMethod] = useState('pix');
     const [rideConfirmed, setRideConfirmed] = useState(false);
+
+    useEffect(() => {
+        // Simulate distance calculation and generate ride options
+        const distanceInKm = Math.random() * (20 - 3) + 3; // Random distance between 3km and 20km
+
+        const formatPrice = (price: number) => `R$ ${price.toFixed(2).replace('.', ',')}`;
+        
+        const normalPrice = distanceInKm * 1.20;
+        const comfortPrice = distanceInKm * 2.00;
+
+        const generatedOptions: RideOption[] = [
+            { name: 'Corrida Normal', price: formatPrice(normalPrice), eta: `${Math.round(distanceInKm * 2)} min`, icon: 'https://placehold.co/40x40.png' },
+            { name: 'Comfort', price: formatPrice(comfortPrice), eta: `${Math.round(distanceInKm * 1.8)} min`, icon: 'https://placehold.co/40x40.png' },
+        ];
+
+        setRideOptions(generatedOptions);
+    }, [from, to]);
+
 
     const fromPosition: [number, number] = [-3.74, -38.54];
     const toPosition: [number, number] = [-3.76, -38.52];
 
-    const handleSelectRide = (ride: typeof rideOptions[0]) => {
+    const handleSelectRide = (ride: RideOption) => {
         setSelectedRide(ride);
         setStep(2);
     }
@@ -129,7 +149,7 @@ function RideRequestView({ from, to, onBack }: { from: string, to: string, onBac
                         <div>
                             <h3 className="text-xl font-bold text-center mb-4">Opções de Viagem</h3>
                             <div className="space-y-3">
-                                {rideOptions.map((ride, index) => (
+                                {rideOptions.length > 0 ? rideOptions.map((ride, index) => (
                                     <button key={index} onClick={() => handleSelectRide(ride)} className="w-full flex items-center justify-between p-3 bg-secondary rounded-lg text-left hover:bg-muted">
                                         <div className="flex items-center space-x-4">
                                             <Image src={ride.icon} width={40} height={40} alt={ride.name} data-ai-hint="car icon" />
@@ -140,7 +160,7 @@ function RideRequestView({ from, to, onBack }: { from: string, to: string, onBac
                                         </div>
                                         <p className="font-bold text-lg">{ride.price}</p>
                                     </button>
-                                ))}
+                                )) : <p className="text-center text-muted-foreground">Calculando tarifas...</p>}
                             </div>
                         </div>
                     )}
@@ -520,3 +540,4 @@ export default function PassengerView() {
         </div>
     );
 }
+
