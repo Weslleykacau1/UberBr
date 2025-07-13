@@ -1,108 +1,138 @@
 'use client';
 import React, { useState, useContext } from 'react';
-import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { AppContext } from '@/context/app-context';
-import { MapPin, DollarSign, User, Star, Sun, Moon, LogOut, Smartphone, CreditCard, Banknote, Sparkles } from 'lucide-react';
-import PaymentOption from '@/components/payment-option';
-import GeminiSuggestionModal from '@/components/gemini-modal';
+import { Search, Calendar, Clock, Car, Package, BookOpen, User, Grid2x2, Home, BarChart2 } from 'lucide-react';
+import Image from 'next/image';
 
-const MapComponent = dynamic(() => import('@/components/dynamic-map'), { ssr: false });
+const MotorcycleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+        <path d="M5.5 17.5a2.5 2.5 0 0 0 5 0" />
+        <path d="M15 17.5a2.5 2.5 0 0 0 5 0" />
+        <path d="M15 17.5H5.5l1.5-5H12l4-5h2.5" />
+        <path d="M7 6l2-3h3.5" />
+    </svg>
+);
 
-const mockDrivers = [
-  { id: 1, name: 'Antônio', rating: 4.8, car: 'Fiat Cronos', distance: '5 min', position: [-3.742, -38.535] as [number, number] },
-  { id: 2, name: 'Lúcia', rating: 4.9, car: 'Hyundai HB20', distance: '8 min', position: [-3.750, -38.550] as [number, number] },
-  { id: 3, name: 'Carlos', rating: 4.7, car: 'Chevrolet Onix', distance: '12 min', position: [-3.725, -38.512] as [number, number] },
-];
-
-const userPosition = [-3.74, -38.54] as [number, number];
-
+const SuggestionButton = ({ icon, label }: { icon: React.ReactNode, label: string }) => (
+    <button className="flex flex-col items-center justify-center space-y-2">
+        <div className="bg-gray-700 p-4 rounded-lg">
+            {icon}
+        </div>
+        <span className="text-sm font-medium text-gray-200">{label}</span>
+    </button>
+);
 
 export default function PassengerView() {
-  const { user, handleLogout, isDarkMode, toggleDarkMode } = useContext(AppContext);
-  const [destination, setDestination] = useState('');
-  const [fare, setFare] = useState('');
-  const [showDriverList, setShowDriverList] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('pix');
-  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
-  const [suggestion, setSuggestion] = useState('');
-  const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
+    const { user, handleLogout, isDarkMode, toggleDarkMode } = useContext(AppContext);
+    const [activeTab, setActiveTab] = useState('home');
+    
+    if (isDarkMode === undefined) {
+        return null;
+    }
 
-  if (isDarkMode === undefined) {
-    return null; // or a loading skeleton
-  }
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'home':
+                return (
+                    <div className="p-4 space-y-6">
+                        {/* Search and Schedule */}
+                        <div className="flex items-center space-x-2">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                <input
+                                    type="text"
+                                    placeholder="Aonde você está indo?"
+                                    className="w-full bg-gray-800 border-gray-700 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-lime-400"
+                                />
+                            </div>
+                            <button className="flex items-center bg-gray-800 px-4 py-3 rounded-lg text-sm font-semibold">
+                                <Calendar size={16} className="mr-2" />
+                                Mais tarde
+                            </button>
+                        </div>
 
-  const getTripSuggestions = async () => {
-      setIsLoadingSuggestion(true);
-      setShowSuggestionModal(true);
-      // This would be a call to your Genkit flow
-      // For now, we'll mock the response
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const mockSuggestion = `* **Praia de Iracema:** Famosa pela Ponte dos Ingleses e vida noturna.\n* **Mercado Central:** Ótimo para compras de artesanato local.\n* **Beach Park:** Um dos maiores parques aquáticos da América Latina.`;
-      setSuggestion(mockSuggestion);
-      setIsLoadingSuggestion(false);
-  };
-  
-  const handleSelectSuggestion = (selectedDestination: string) => {
-      const placeName = selectedDestination.split(/[-:]/)[0].trim();
-      setDestination(placeName);
-      setShowSuggestionModal(false);
-  }
+                        {/* Recent Destinations */}
+                        <div className="space-y-3">
+                            <div className="flex items-center space-x-4">
+                                <div className="bg-gray-700 p-2 rounded-full"><Clock size={20} className="text-gray-300" /></div>
+                                <div>
+                                    <p className="font-semibold">Rua Torreon, 220 - Potira II</p>
+                                    <p className="text-sm text-gray-400">Caucaia - CE, 61650-375</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <div className="bg-gray-700 p-2 rounded-full"><Clock size={20} className="text-gray-300" /></div>
+                                <div>
+                                    <p className="font-semibold">Terminal Rodoviário Eng. João Thomé</p>
+                                    <p className="text-sm text-gray-400">Av. Deputado Oswaldo Studart, 761 - Fátima</p>
+                                </div>
+                            </div>
+                        </div>
 
-  return (
-    <div className="relative h-full flex flex-col bg-gray-800">
-      {showSuggestionModal && <GeminiSuggestionModal title="Sugestões de Viagem" content={suggestion} isLoading={isLoadingSuggestion} onClose={() => setShowSuggestionModal(false)} onSelect={handleSelectSuggestion}/>}
-      <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-20">
-        <h1 className="text-xl font-bold text-white bg-black bg-opacity-50 px-3 py-1 rounded-lg">{user?.name || 'Passageiro'}</h1>
-        <div>
-          <button onClick={toggleDarkMode} className="p-2 rounded-full bg-gray-700 mr-2">{isDarkMode ? <Sun /> : <Moon />}</button>
-          <button onClick={handleLogout} className="p-2 rounded-full bg-red-500"><LogOut /></button>
+                        {/* Business Profile Card */}
+                         <div className="bg-blue-600 rounded-xl p-4 flex items-center justify-between overflow-hidden relative">
+                            <div className="z-10">
+                                <h3 className="font-bold text-lg">Your business profile</h3>
+                                <button className="mt-3 bg-gray-900/50 text-white font-semibold py-1.5 px-4 rounded-full text-sm">Ver vantagens</button>
+                            </div>
+                            <div className="absolute right-0 bottom-0 w-1/2 h-full">
+                                <Image src="https://placehold.co/300x200.png" layout="fill" objectFit="cover" alt="Business profile illustration" data-ai-hint="business travel" className="opacity-80" />
+                            </div>
+                        </div>
+
+                        {/* Suggestions */}
+                        <div>
+                             <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-bold">Sugestões</h3>
+                                <button className="text-sm font-semibold text-lime-400">Ver tudo</button>
+                            </div>
+                            <div className="grid grid-cols-4 gap-4 text-center">
+                                <SuggestionButton icon={<Car size={24} />} label="Viagem" />
+                                <SuggestionButton icon={<Package size={24} />} label="Envios" />
+                                <SuggestionButton icon={<MotorcycleIcon />} label="Moto" />
+                                <SuggestionButton icon={<Calendar className="text-red-400" />} label="Reserve" />
+                            </div>
+                        </div>
+                        
+                        {/* Daily Savings */}
+                        <div>
+                             <h3 className="text-xl font-bold mb-3">Economize todos os dias</h3>
+                             <div className="bg-gray-800 rounded-xl h-24 w-full">
+                                 <Image src="https://placehold.co/600x200.png" layout="responsive" width={600} height={200} objectFit="cover" alt="Daily savings banner" data-ai-hint="promotional banner" className="rounded-xl"/>
+                             </div>
+                        </div>
+
+                    </div>
+                );
+            case 'options': return <div className="p-4 text-center">Opções</div>;
+            case 'activity': return <div className="p-4 text-center">Atividade</div>;
+            case 'account': return <div className="p-4 text-center">Conta</div>;
+            default: return null;
+        }
+    }
+
+    const NavButton = ({ tabName, icon, label }: { tabName: string, icon: React.ReactNode, label: string }) => (
+        <button onClick={() => setActiveTab(tabName)} className={`flex flex-col items-center space-y-1 ${activeTab === tabName ? 'text-lime-400' : 'text-gray-400'}`}>
+            {icon}
+            <span className="text-xs font-bold">{label}</span>
+        </button>
+    );
+
+    return (
+        <div className="h-full flex flex-col bg-gray-900 text-white">
+            <header className="p-4 flex justify-between items-center">
+                <h1 className="text-xl font-bold">Olá, {user?.name || 'Passageiro'}!</h1>
+                <button onClick={handleLogout} className="text-sm font-semibold text-red-500">Sair</button>
+            </header>
+            <main className="flex-grow overflow-y-auto">
+                {renderContent()}
+            </main>
+            <footer className="bg-gray-800 p-3 flex justify-around border-t border-gray-700">
+                <NavButton tabName="home" icon={<Home />} label="Início" />
+                <NavButton tabName="options" icon={<Grid2x2 />} label="Opções" />
+                <NavButton tabName="activity" icon={<BarChart2 />} label="Atividade" />
+                <NavButton tabName="account" icon={<User />} label="Conta" />
+            </footer>
         </div>
-      </div>
-      
-      <div className="flex-grow z-10">
-        <Image src="https://placehold.co/800x600.png" alt="Map placeholder" layout="fill" objectFit="cover" data-ai-hint="map city" />
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0 bg-gray-900 p-4 rounded-t-2xl shadow-lg z-20">
-        {!showDriverList ? (
-          <>
-            <div className="relative mb-2">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="text" placeholder="Para onde vamos?" value={destination} onChange={(e) => setDestination(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-lime-400"/>
-            </div>
-            <button onClick={getTripSuggestions} className="w-full text-sm flex items-center justify-center text-lime-400 hover:text-lime-300 mb-2 font-semibold"><Sparkles size={16} className="mr-2"/> Não sabe para onde ir? Peça sugestões!</button>
-            <div className="relative mb-4">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="number" placeholder="Ofereça sua tarifa" value={fare} onChange={(e) => setFare(e.target.value)} className="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:border-lime-400"/>
-            </div>
-            <div className="mb-4">
-                <h3 className="text-gray-400 text-sm font-bold mb-3">Forma de pagamento</h3>
-                <div className="flex justify-between space-x-2">
-                    <PaymentOption icon={<Smartphone size={20}/>} label="PIX" selected={paymentMethod === 'pix'} onClick={() => setPaymentMethod('pix')} />
-                    <PaymentOption icon={<CreditCard size={20}/>} label="Máquina" selected={paymentMethod === 'machine'} onClick={() => setPaymentMethod('machine')} />
-                    <PaymentOption icon={<Banknote size={20}/>} label="Dinheiro" selected={paymentMethod === 'cash'} onClick={() => setPaymentMethod('cash')} />
-                </div>
-            </div>
-            <button onClick={() => setShowDriverList(true)} disabled={!destination || !fare} className="w-full bg-lime-400 text-gray-900 font-bold py-4 rounded-lg disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors mt-2">Encontrar motorista</button>
-          </>
-        ) : (
-          <div>
-            <div className="flex justify-between items-center mb-4"><h2 className="text-xl font-bold">Motoristas disponíveis</h2><button onClick={() => setShowDriverList(false)} className="text-lime-400 font-semibold">Voltar</button></div>
-            <div className="space-y-3 max-h-48 overflow-y-auto">
-              {mockDrivers.map(driver => (
-                <div key={driver.id} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-gray-700 rounded-full mr-3"><User className="text-lime-400" /></div>
-                    <div><p className="font-bold">{driver.name}</p><p className="text-sm text-gray-400 flex items-center"><Star size={14} className="text-yellow-400 mr-1" /> {driver.rating} - {driver.car}</p></div>
-                  </div>
-                  <div className="text-right"><p className="font-bold text-lime-400">{driver.distance}</p><button className="text-xs bg-lime-500 text-black px-2 py-1 rounded mt-1">Chamar</button></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    );
 }
