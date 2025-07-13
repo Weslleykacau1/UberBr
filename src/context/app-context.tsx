@@ -23,7 +23,7 @@ type AppContextType = {
   setScreen: (screen: Screen) => void;
   user: User | null;
   users: User[];
-  isDarkMode: boolean | undefined;
+  isDarkMode: boolean;
   toggleDarkMode: () => void;
   handleLogin: (email: string, password?: string, rememberMe?: boolean) => void;
   handleRegister: (newUser: Omit<User, 'id' | 'status'>) => void;
@@ -45,7 +45,7 @@ const initialUsers: User[] = [
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [screen, setScreen] = useState<Screen>('welcome');
   const [user, setUser] = useState<User | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState<boolean | undefined>(undefined);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [users, setUsers] = useState<User[]>(initialUsers);
   const router = useRouter();
 
@@ -58,7 +58,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (isDarkMode === undefined) return;
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
