@@ -32,7 +32,7 @@ export const AppContext = createContext<AppContextType>({} as AppContextType);
 const initialUsers: User[] = [
     { id: 1, email: 'passageiro@email.com', password: '123', role: 'passenger', name: 'Alex', status: 'approved' },
     { id: 2, email: 'motorista@email.com', password: '123', role: 'driver', name: 'Bruno', status: 'approved' },
-    { id: 3, email: 'admin@email.com', password: '123', role: 'admin', name: 'Admin', status: 'approved' },
+    { id: 3, email: 'admin@brasilride.com', password: 'superadmin123', role: 'admin', name: 'Admin', status: 'approved' },
     { id: 4, email: 'novo.motorista@email.com', password: '123', role: 'driver', name: 'Carla', status: 'pending' },
     { id: 5, email: 'novo.passageiro@email.com', password: '123', role: 'passenger', name: 'Daniel', status: 'pending' },
 ];
