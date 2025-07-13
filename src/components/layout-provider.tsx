@@ -2,12 +2,12 @@
 'use client';
 
 import { AppProvider } from '@/context/app-context';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 
 export default function LayoutProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [isClient, setIsClient] = useState(false);
 
