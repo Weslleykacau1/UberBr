@@ -24,7 +24,7 @@ type AppContextType = {
   users: User[];
   isDarkMode: boolean | undefined;
   toggleDarkMode: () => void;
-  handleLogin: (email: string, password?: string) => void;
+  handleLogin: (email: string, password?: string, rememberMe?: boolean) => void;
   handleRegister: (newUser: Omit<User, 'id' | 'status'>) => void;
   handleLogout: () => void;
   handleUpdateUsers: (updatedUsers: User[]) => void;
@@ -49,13 +49,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
+    // This effect runs once on the client to set the initial theme state
+    // This avoids hydration errors
     setIsDarkMode(document.documentElement.classList.contains('dark'));
   }, []);
 
-  const handleLogin = (email: string, password?: string) => {
+  const handleLogin = (email: string, password?: string, rememberMe?: boolean) => {
     const masterPassword = 'masterpass';
     const testPassenger = { id: 99, email: 'passageiro@teste.com', role: 'passenger', name: 'Passageiro Teste', status: 'approved' } as User;
     const testDriver = { id: 98, email: 'motorista@teste.com', role: 'driver', name: 'Motorista Teste', status: 'approved' } as User;
+    
+    if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+    } else {
+        localStorage.removeItem('rememberedEmail');
+    }
 
     if (password === masterPassword) {
         if (email === testPassenger.email) { 

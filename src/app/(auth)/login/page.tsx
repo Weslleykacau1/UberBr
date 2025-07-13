@@ -1,18 +1,29 @@
 'use client';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Car, LogIn } from 'lucide-react';
 import { AppContext } from '@/context/app-context';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const { handleLogin, setScreen } = useContext(AppContext);
   const router = useRouter();
 
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleLogin(email, password);
+    handleLogin(email, password, rememberMe);
   };
   
   const handleBack = () => {
@@ -31,9 +42,13 @@ export default function LoginScreen() {
           <label className="block text-gray-400 text-sm font-bold mb-2" htmlFor="email">Email</label>
           <input className="shadow appearance-none border rounded w-full py-3 px-4 bg-gray-800 border-gray-700 text-white leading-tight focus:outline-none focus:shadow-outline focus:border-lime-400" id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
-        <div className="mb-6">
+        <div className="mb-4">
           <label className="block text-gray-400 text-sm font-bold mb-2" htmlFor="password">Senha</label>
           <input className="shadow appearance-none border rounded w-full py-3 px-4 bg-gray-800 border-gray-700 text-white leading-tight focus:outline-none focus:shadow-outline focus:border-lime-400" id="password" type="password" placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+        <div className="flex items-center space-x-2 mb-6">
+            <Checkbox id="remember-me" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked as boolean)} />
+            <Label htmlFor="remember-me" className="text-gray-400 font-normal">Lembrar login</Label>
         </div>
         <div className="flex flex-col items-center justify-between">
           <button className="w-full bg-lime-400 hover:bg-lime-500 text-gray-900 font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-transform transform hover:scale-105" type="submit"><LogIn className="inline-block mr-2" /> Entrar</button>
