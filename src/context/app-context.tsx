@@ -51,8 +51,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // This effect runs only on the client, after the initial render.
     // It correctly syncs the state with the DOM, avoiding hydration mismatch.
-    const root = window.document.documentElement;
-    setIsDarkMode(root.classList.contains('dark'));
+    if (typeof window !== 'undefined') {
+        const root = window.document.documentElement;
+        setIsDarkMode(root.classList.contains('dark'));
+    }
   }, []);
 
   const handleLogin = (email: string, password?: string) => {

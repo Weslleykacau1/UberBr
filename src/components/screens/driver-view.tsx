@@ -96,7 +96,7 @@ export default function DriverView() {
 
   return (
     <div className={`h-full flex flex-col ${isDarkMode ? 'bg-gray-900' : 'bg-gray-200'}`}>
-        <header className="p-4 flex justify-between items-center"><h1 className="text-xl font-bold">Olá, {user?.name}</h1><div className="flex items-center space-x-2"><button onClick={() => setIsOnline(!isOnline)} className={`px-4 py-2 rounded-full font-semibold transition-colors ${isOnline ? 'bg-lime-400 text-gray-900' : 'bg-red-500 text-white'}`}>{isOnline ? 'Online' : 'Offline'}</button><button onClick={toggleDarkMode} className="p-2 rounded-full bg-gray-700">{isDarkMode ? <Sun /> : <Moon />}</button><button onClick={handleLogout} className="p-2 rounded-full bg-gray-700"><LogOut /></button></div></header>
+        <header className="p-4 flex justify-between items-center"><h1 className="text-xl font-bold">Olá, {user?.name || 'Motorista'}</h1><div className="flex items-center space-x-2"><button onClick={() => setIsOnline(!isOnline)} className={`px-4 py-2 rounded-full font-semibold transition-colors ${isOnline ? 'bg-lime-400 text-gray-900' : 'bg-red-500 text-white'}`}>{isOnline ? 'Online' : 'Offline'}</button><button onClick={toggleDarkMode} className="p-2 rounded-full bg-gray-700">{isDarkMode ? <Sun /> : <Moon />}</button><button onClick={handleLogout} className="p-2 rounded-full bg-gray-700"><LogOut /></button></div></header>
         <main className="flex-grow p-4 overflow-y-auto">
             {currentView === 'dashboard' && <DriverDashboard />}
             {currentView === 'requests' && <RideRequests />}

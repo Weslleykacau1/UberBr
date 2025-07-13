@@ -48,7 +48,7 @@ export default function PassengerView() {
     <div className="relative h-full flex flex-col bg-gray-800">
       {showSuggestionModal && <GeminiSuggestionModal title="Sugestões de Viagem" content={suggestion} isLoading={isLoadingSuggestion} onClose={() => setShowSuggestionModal(false)} onSelect={handleSelectSuggestion}/>}
       <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-20">
-        <h1 className="text-xl font-bold text-white bg-black bg-opacity-50 px-3 py-1 rounded-lg">{user?.name}</h1>
+        <h1 className="text-xl font-bold text-white bg-black bg-opacity-50 px-3 py-1 rounded-lg">{user?.name || 'Passageiro'}</h1>
         <div>
           <button onClick={toggleDarkMode} className="p-2 rounded-full bg-gray-700 mr-2">{isDarkMode ? <Sun /> : <Moon />}</button>
           <button onClick={handleLogout} className="p-2 rounded-full bg-red-500"><LogOut /></button>
