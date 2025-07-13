@@ -392,7 +392,7 @@ function AccountView({ user, onLogout }: { user: any, onLogout: () => void }) {
                     icon={<Moon size={20} className="text-primary" />}
                     title="Modo Escuro"
                     description="Interface otimizada para motoristas"
-                    control={<Switch checked={isDarkMode} onCheckedChange={toggleDarkMode} />}
+                    control={<Switch checked={!!isDarkMode} onCheckedChange={toggleDarkMode} />}
                 />
                 <Separator />
                 <SettingsItem
@@ -540,4 +540,3 @@ export default function PassengerView() {
         </div>
     );
 }
-

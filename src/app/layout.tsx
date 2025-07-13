@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Poppins } from 'next/font/google';
-import Script from 'next/script';
 import LayoutProvider from '@/components/layout-provider';
 
 const poppins = Poppins({
@@ -26,15 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <Script id="theme-switcher" strategy="beforeInteractive">
-          {`
-            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-              document.documentElement.classList.add('dark')
-            } else {
-              document.documentElement.classList.remove('dark')
-            }
-          `}
-        </Script>
+        {/* The inline script that caused hydration errors has been removed. */}
       </head>
       <body className={`${poppins.variable} font-sans antialiased`}>
         <LayoutProvider>{children}</LayoutProvider>
