@@ -44,17 +44,14 @@ const initialUsers: User[] = [
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [screen, setScreen] = useState<Screen>('welcome');
   const [user, setUser] = useState<User | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false); // Default to false, will be set correctly on client
   const [users, setUsers] = useState<User[]>(initialUsers);
   const router = useRouter();
 
   useEffect(() => {
     // This effect runs only on the client, after the initial render.
     // It correctly syncs the state with the DOM, avoiding hydration mismatch.
-    if (typeof window !== 'undefined') {
-        const root = window.document.documentElement;
-        setIsDarkMode(root.classList.contains('dark'));
-    }
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
   }, []);
 
   const handleLogin = (email: string, password?: string) => {
