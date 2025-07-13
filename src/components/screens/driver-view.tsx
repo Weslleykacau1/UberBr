@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useContext } from 'react';
+import Image from 'next/image';
 import { AppContext } from '@/context/app-context';
 import {
   Home,
@@ -9,6 +10,14 @@ import {
   Star,
   DollarSign,
   Car,
+  Menu,
+  ChevronDown,
+  Fuel,
+  TriangleAlert,
+  Layers,
+  Shield,
+  SlidersHorizontal,
+  ClipboardCheck
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -88,68 +97,49 @@ function StatisticsView() {
 }
 
 function HomeView() {
-  const rideRequest = {
-    from: {
-      address: 'Rua Democrata, 1804 (Granja Portugal, Fortaleza - CE)',
-      position: [-3.768, -38.59] as [number, number],
-    },
-    to: {
-      address: 'Rua José Pedra, 1515 (Parque Dois Irmãos, Fortaleza - CE)',
-      position: [-3.79, -38.56] as [number, number],
-    },
-    price: 15,
-    distance: 5.6,
-    user: { name: 'Antônio', rating: 4.8 },
-  };
-
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Pedido de Viagem</h2>
-      <div className="bg-gray-800 rounded-lg overflow-hidden">
-        <div className="h-64 w-full bg-gray-700 flex items-center justify-center">
-            <p className="text-gray-500">O mapa foi desativado temporariamente.</p>
-        </div>
-        <div className="p-4">
-          <div className="flex justify-between items-start">
-            <div className="flex">
-              <div className="p-3 bg-gray-700 rounded-full mr-4">
-                <Car className="text-lime-400" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">
-                  R$ {Math.round(rideRequest.price / rideRequest.distance)}/km
-                  ~{rideRequest.distance} km
-                </p>
-                <p className="text-xl font-bold">R$ {rideRequest.price}</p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 pl-2 border-l-2 border-dashed border-lime-400 space-y-2">
-            <div>
-              <p className="text-xs text-gray-400">PARTIDA</p>
-              <p>{rideRequest.from.address}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400">DESTINO</p>
-              <p>{rideRequest.to.address}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex space-x-2">
-            <button className="flex-1 bg-lime-400 text-gray-900 font-bold py-3 rounded-lg">
-              Aceitar por R$ {rideRequest.price}
-            </button>
-            <button className="bg-gray-700 text-white font-bold py-3 px-4 rounded-lg">
-              R$ {rideRequest.price + 2}
-            </button>
-            <button className="bg-gray-700 text-white font-bold py-3 px-4 rounded-lg">
-              R$ {rideRequest.price + 3}
-            </button>
-          </div>
+    <div className="relative h-full w-full bg-gray-800 text-white">
+      {/* Map Placeholder */}
+      <div className="absolute inset-0 z-0">
+        <Image src="https://placehold.co/600x1200.png" layout="fill" objectFit="cover" alt="Map placeholder" data-ai-hint="map city" />
+      </div>
+
+      {/* Top UI Elements */}
+      <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center">
+        <button className="bg-white p-2.5 rounded-full shadow-lg relative">
+          <Menu size={24} className="text-black" />
+          <span className="absolute -top-1 -right-1 block h-3 w-3 rounded-full bg-red-500 border-2 border-white"></span>
+        </button>
+        <button className="bg-gray-900 text-white px-6 py-2.5 rounded-full shadow-lg flex items-center font-bold text-lg">
+          R$0,00 <ChevronDown size={20} className="ml-1" />
+        </button>
+      </div>
+
+      {/* Side Action Buttons */}
+      <div className="absolute top-1/2 -translate-y-1/2 right-4 z-10 flex flex-col space-y-3">
+        <button className="bg-white p-3 rounded-full shadow-lg"><Fuel className="text-black" /></button>
+        <button className="bg-white p-3 rounded-full shadow-lg"><TriangleAlert className="text-black" /></button>
+        <button className="bg-white p-3 rounded-full shadow-lg"><Layers className="text-black" /></button>
+      </div>
+      
+      <div className="absolute bottom-1/2 left-4 z-10">
+          <button className="bg-white p-3 rounded-full shadow-lg"><Shield className="text-blue-600" /></button>
+      </div>
+
+
+      {/* Bottom Sheet */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 bg-white text-black p-4 rounded-t-2xl shadow-[-2px_-5px_15px_rgba(0,0,0,0.2)]">
+        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4"></div>
+        <div className="flex items-center justify-between">
+          <button className="p-3"><SlidersHorizontal size={28} /></button>
+          <button className="flex-1 bg-yellow-400 text-black font-bold text-lg py-3 rounded-full mx-4">Conectar</button>
+          <button className="p-3"><ClipboardCheck size={28} /></button>
         </div>
       </div>
     </div>
   );
 }
+
 
 function WalletView() {
   return (
@@ -218,7 +208,7 @@ function ProfileView() {
 export default function DriverView() {
   const { user } = useContext(AppContext);
   const [isOnline, setIsOnline] = useState(false);
-  const [currentView, setCurrentView] = useState('statistics');
+  const [currentView, setCurrentView] = useState('home');
 
   const renderContent = () => {
     switch (currentView) {
@@ -231,12 +221,15 @@ export default function DriverView() {
       case 'profile':
         return <ProfileView />;
       default:
-        return <StatisticsView />;
+        return <HomeView />;
     }
   };
 
+  const FullScreenContent = ['home'];
+
   return (
     <div className="h-full flex flex-col bg-gray-900 text-white">
+      {!FullScreenContent.includes(currentView) && (
       <header className="p-4">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
@@ -285,8 +278,11 @@ export default function DriverView() {
           </div>
         </div>
       </header>
+      )}
 
-      <main className="flex-grow p-4 overflow-y-auto">{renderContent()}</main>
+      <main className="flex-grow overflow-y-auto">
+        {renderContent()}
+      </main>
 
       <footer className="bg-gray-800 p-2 flex justify-around">
         <button
@@ -329,3 +325,5 @@ export default function DriverView() {
     </div>
   );
 }
+
+    
