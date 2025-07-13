@@ -111,7 +111,7 @@ function RideRequestView({ from, to, onBack }: { from: string, to: string, onBac
              <div className="h-full flex flex-col">
                 <div className="relative flex-grow">
                     <Suspense fallback={<div>Carregando mapa...</div>}>
-                        <DynamicMap center={fromPosition} rideRequest={{ from: {address: from, position: fromPosition}, to: {address: to, position: toPosition} }} userPos={fromPosition} drivers={[{id: 1, name: 'Antônio', rating: 4.8, car: 'Fiat Cronos', distance: '5 min', position: [-3.742, -38.535]}]}/>
+                        <DynamicMap key="passenger-map-confirmed" center={fromPosition} rideRequest={{ from: {address: from, position: fromPosition}, to: {address: to, position: toPosition} }} userPos={fromPosition} drivers={[{id: 1, name: 'Antônio', rating: 4.8, car: 'Fiat Cronos', distance: '5 min', position: [-3.742, -38.535]}]}/>
                     </Suspense>
                 </div>
                 <Card className="rounded-t-2xl rounded-b-none p-4 border-t-4 border-primary shadow-lg">
@@ -139,7 +139,7 @@ function RideRequestView({ from, to, onBack }: { from: string, to: string, onBac
         <div className="h-full flex flex-col">
             <div className="relative flex-grow">
                  <Suspense fallback={<div>Carregando mapa...</div>}>
-                    <DynamicMap center={fromPosition} rideRequest={{ from: {address: from, position: fromPosition}, to: {address: to, position: toPosition} }} />
+                    <DynamicMap key="passenger-map-request" center={fromPosition} rideRequest={{ from: {address: from, position: fromPosition}, to: {address: to, position: toPosition} }} />
                 </Suspense>
             </div>
             <Card className="rounded-t-2xl rounded-b-none p-4 border-t-4 border-primary shadow-lg">

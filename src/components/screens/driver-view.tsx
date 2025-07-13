@@ -173,7 +173,7 @@ function HomeView({ onMenuClick, onConnect, isOnline }: { onMenuClick: () => voi
     <div className="relative h-full w-full bg-secondary text-foreground">
       <div className="absolute inset-0 z-0">
           <Suspense fallback={<div className="bg-muted w-full h-full flex items-center justify-center"><p>Carregando mapa...</p></div>}>
-            <DynamicMap center={[-3.74, -38.54]} drivers={[{id: 1, name: 'Antônio', rating: 4.8, car: 'Fiat Cronos', distance: '5 min', position: [-3.742, -38.535]}]} userPos={[-3.74, -38.54]} />
+            <DynamicMap key="driver-home-map" center={[-3.74, -38.54]} drivers={[{id: 1, name: 'Antônio', rating: 4.8, car: 'Fiat Cronos', distance: '5 min', position: [-3.742, -38.535]}]} userPos={[-3.74, -38.54]} />
         </Suspense>
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
       </div>
