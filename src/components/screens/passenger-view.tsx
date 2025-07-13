@@ -46,10 +46,6 @@ export default function PassengerView() {
                                     className="w-full bg-card border-border shadow-sm rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
                                 />
                             </div>
-                            <Button variant="secondary" className="flex items-center px-4 py-3 h-auto rounded-lg text-sm font-semibold shadow-sm">
-                                <Calendar size={16} className="mr-2" />
-                                Mais tarde
-                            </Button>
                         </div>
 
                         {/* Recent Destinations */}
