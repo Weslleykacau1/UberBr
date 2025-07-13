@@ -20,6 +20,8 @@ import {
   ArrowLeft,
   History,
   PhoneCall,
+  Zap,
+  Luggage,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -33,6 +35,8 @@ import {
   Tooltip,
 } from 'recharts';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 const driverStats = {
@@ -101,6 +105,13 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
 }
 
 function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [preferences, setPreferences] = useState({ flash: true, comfort: false });
+
+  const handlePreferenceChange = (key: 'flash' | 'comfort') => {
+    setPreferences(prev => ({...prev, [key]: !prev[key]}));
+  };
+
   return (
     <div className="relative h-full w-full bg-gray-800 text-white">
       {/* Map Placeholder */}
@@ -147,12 +158,49 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Ride Preferences Modal */}
+      <AlertDialog open={showPreferences} onOpenChange={setShowPreferences}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Preferências de Corrida</AlertDialogTitle>
+            <AlertDialogDescription>
+              Selecione os tipos de corrida que você deseja receber.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4 space-y-4">
+             <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg">
+                <Checkbox id="flash" checked={preferences.flash} onCheckedChange={() => handlePreferenceChange('flash')}/>
+                <Label htmlFor="flash" className="flex items-center gap-2 cursor-pointer text-base">
+                  <Zap className="text-yellow-400" />
+                  <div>
+                    <p className="font-semibold">Corrida Flash</p>
+                    <p className="text-xs text-gray-400">Viagens rápidas, sem porta-malas grande.</p>
+                  </div>
+                </Label>
+              </div>
+              <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg">
+                <Checkbox id="comfort" checked={preferences.comfort} onCheckedChange={() => handlePreferenceChange('comfort')} />
+                <Label htmlFor="comfort" className="flex items-center gap-2 cursor-pointer text-base">
+                  <Luggage className="text-blue-400" />
+                  <div>
+                    <p className="font-semibold">Corrida Conforto</p>
+                    <p className="text-xs text-gray-400">Viagens com porta-malas grande.</p>
+                  </div>
+                </Label>
+              </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowPreferences(false)}>Salvar Preferências</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
       {/* Bottom Sheet */}
       <div className="absolute bottom-0 left-0 right-0 z-10 bg-white text-black p-4 rounded-t-2xl shadow-[-2px_-5px_15px_rgba(0,0,0,0.2)]">
         <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4"></div>
         <div className="flex items-center justify-between">
-          <button className="p-3"><SlidersHorizontal size={28} /></button>
+          <button onClick={() => setShowPreferences(true)} className="p-3"><SlidersHorizontal size={28} /></button>
           <button className="flex-1 bg-yellow-400 text-black font-bold text-lg py-3 rounded-full mx-4">Conectar</button>
           <button className="p-3"><History size={28} /></button>
         </div>
@@ -344,5 +392,3 @@ export default function DriverView() {
     </div>
   );
 }
-
-    
