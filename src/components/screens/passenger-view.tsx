@@ -336,10 +336,9 @@ export default function PassengerView() {
         switch (activeTab) {
             case 'home':
                 return <HomeView onSearch={handleSearch} />;
-            case 'options': return <div className="p-4 text-center">Opções</div>;
             case 'activity': return <ActivityView />;
             case 'account': return <div className="p-4 text-center">Conta</div>;
-            default: return null;
+            default: return <HomeView onSearch={handleSearch} />;
         }
     }
 
@@ -364,7 +363,6 @@ export default function PassengerView() {
              {!isRequestingRide && (
                 <footer className="bg-card p-2 flex justify-around border-t shadow-[0_-2px_5px_-3px_rgba(0,0,0,0.05)]">
                     <NavButton tabName="home" icon={<Home />} label="Início" />
-                    <NavButton tabName="options" icon={<Grid2x2 />} label="Opções" />
                     <NavButton tabName="activity" icon={<BarChart2 />} label="Atividade" />
                     <NavButton tabName="account" icon={<User />} label="Conta" />
                 </footer>
