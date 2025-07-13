@@ -1,13 +1,14 @@
 'use client';
 import React, { useState, useContext, useEffect, Suspense } from 'react';
 import { AppContext } from '@/context/app-context';
-import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Grid2x2, Home, BarChart2, Repeat, Star } from 'lucide-react';
+import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Home, BarChart2, Repeat, Star, LifeBuoy, ChevronRight, Edit, LogOut, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import PaymentOption from '@/components/payment-option';
 import dynamic from 'next/dynamic';
 import { Badge } from '../ui/badge';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 
 const DynamicMap = dynamic(() => import('@/components/dynamic-map'), {
     ssr: false,
@@ -308,6 +309,50 @@ function ActivityView() {
     );
 }
 
+function AccountView({ user, onLogout }: { user: any, onLogout: () => void }) {
+  return (
+    <div className="p-4 space-y-8 bg-background h-full">
+      <div>
+        <h2 className="text-2xl font-bold mb-6">Minha Conta</h2>
+        <div className="flex items-center space-x-4">
+          <Avatar className="w-20 h-20 border-4 border-primary">
+            <AvatarImage src={`https://i.pravatar.cc/150?u=${user?.email}`} alt={user?.name} />
+            <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
+          </Avatar>
+          <div>
+            <h3 className="text-xl font-bold">{user?.name}</h3>
+            <p className="text-muted-foreground">{user?.email}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <button className="w-full flex items-center justify-between p-4 bg-card rounded-lg text-left shadow-sm hover:bg-muted">
+            <div className="flex items-center space-x-4">
+                <LifeBuoy className="text-primary" />
+                <span className="font-semibold">Central de Ajuda</span>
+            </div>
+            <ChevronRight className="text-muted-foreground" />
+        </button>
+        <button className="w-full flex items-center justify-between p-4 bg-card rounded-lg text-left shadow-sm hover:bg-muted">
+            <div className="flex items-center space-x-4">
+                <MessageSquare className="text-primary" />
+                <span className="font-semibold">Falar com o Suporte</span>
+            </div>
+            <ChevronRight className="text-muted-foreground" />
+        </button>
+      </div>
+
+      <div className="pt-4">
+         <Button onClick={onLogout} variant="outline" className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground">
+            <LogOut className="mr-2" />
+            Sair da Conta
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 
 export default function PassengerView() {
     const { user, handleLogout } = useContext(AppContext);
@@ -337,7 +382,7 @@ export default function PassengerView() {
             case 'home':
                 return <HomeView onSearch={handleSearch} />;
             case 'activity': return <ActivityView />;
-            case 'account': return <div className="p-4 text-center">Conta</div>;
+            case 'account': return <AccountView user={user} onLogout={handleLogout} />;
             default: return <HomeView onSearch={handleSearch} />;
         }
     }
@@ -351,7 +396,7 @@ export default function PassengerView() {
 
     return (
         <div className="h-full flex flex-col bg-background text-foreground">
-            {!isRequestingRide && (
+            {!isRequestingRide && activeTab !== 'account' && (
                 <header className="p-4 flex justify-between items-center">
                     <h1 className="text-2xl font-bold">Olá, {user?.name || 'Passageiro'}!</h1>
                     <Button onClick={handleLogout} variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10">Sair</Button>
