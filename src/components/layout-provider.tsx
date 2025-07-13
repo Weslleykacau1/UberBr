@@ -15,9 +15,5 @@ export default function LayoutProvider({
     setIsClient(true);
   }, []);
 
-  if (!isClient) {
-    return null;
-  }
-
-  return <AppProvider>{children}</AppProvider>;
+  return <AppProvider>{isClient ? children : null}</AppProvider>;
 }
