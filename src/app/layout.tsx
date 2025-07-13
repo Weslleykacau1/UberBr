@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Poppins } from 'next/font/google';
 import { AppProvider } from '@/context/app-context';
-import { ScriptProps } from 'next/script';
+import Script from 'next/script';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -29,6 +29,15 @@ export default function RootLayout({
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossOrigin=""
         />
+        <Script id="theme-switcher" strategy="beforeInteractive">
+          {`
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+              document.documentElement.classList.add('dark')
+            } else {
+              document.documentElement.classList.remove('dark')
+            }
+          `}
+        </Script>
       </head>
       <body className={`${poppins.className} font-sans antialiased`}>
         <AppProvider>{children}</AppProvider>

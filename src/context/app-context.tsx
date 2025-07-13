@@ -49,14 +49,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
-  }, [isDarkMode]);
+    const root = window.document.documentElement;
+    setIsDarkMode(root.classList.contains('dark'));
+  }, []);
 
   const handleLogin = (email: string, password?: string) => {
     const masterPassword = 'masterpass';
@@ -101,7 +96,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         ...newUser, 
         id: users.length + 1, 
         status: 'pending',
-        // Simulate file upload with placeholder URL
         passengerIdUrl: newUser.role === 'passenger' ? 'https://placehold.co/600x400.png' : undefined,
     };
     setUsers([...users, userWithStatus]);
@@ -120,7 +114,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setUsers(updatedUsers); 
   };
   
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+  const toggleDarkMode = () => {
+    const root = window.document.documentElement;
+    root.classList.toggle('dark');
+    localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
+    setIsDarkMode(root.classList.contains('dark'));
+  };
 
   const value = {
     screen,
