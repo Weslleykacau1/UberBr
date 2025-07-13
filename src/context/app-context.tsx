@@ -10,6 +10,8 @@ type User = {
   role: 'passenger' | 'driver' | 'admin';
   name: string;
   status: 'approved' | 'pending' | 'rejected';
+  cnhUrl?: string;
+  folhaCorridaUrl?: string;
 };
 
 type Screen = 'welcome' | 'login' | 'register' | 'passenger' | 'driver' | 'admin';
@@ -33,7 +35,7 @@ const initialUsers: User[] = [
     { id: 1, email: 'passageiro@email.com', password: '123', role: 'passenger', name: 'Alex', status: 'approved' },
     { id: 2, email: 'motorista@email.com', password: '123', role: 'driver', name: 'Bruno', status: 'approved' },
     { id: 3, email: 'admin@brasilride.com', password: 'superadmin123', role: 'admin', name: 'Admin', status: 'approved' },
-    { id: 4, email: 'novo.motorista@email.com', password: '123', role: 'driver', name: 'Carla', status: 'pending' },
+    { id: 4, email: 'novo.motorista@email.com', password: '123', role: 'driver', name: 'Carla', status: 'pending', cnhUrl: 'https://placehold.co/600x400.png', folhaCorridaUrl: 'https://placehold.co/600x400.png' },
     { id: 5, email: 'novo.passageiro@email.com', password: '123', role: 'passenger', name: 'Daniel', status: 'pending' },
 ];
 
