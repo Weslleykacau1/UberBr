@@ -117,7 +117,6 @@ function HomeView() {
 
       {/* Side Action Buttons */}
       <div className="absolute top-1/2 -translate-y-1/2 right-4 z-10 flex flex-col space-y-3">
-        <button className="bg-white p-3 rounded-full shadow-lg"><Fuel className="text-black" /></button>
         <button className="bg-white p-3 rounded-full shadow-lg"><TriangleAlert className="text-black" /></button>
         <button className="bg-white p-3 rounded-full shadow-lg"><Layers className="text-black" /></button>
       </div>
@@ -325,5 +324,3 @@ export default function DriverView() {
     </div>
   );
 }
-
-    
