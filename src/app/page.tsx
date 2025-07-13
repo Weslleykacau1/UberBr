@@ -7,17 +7,16 @@ import WelcomeScreen from '@/components/screens/welcome-screen';
 import PassengerView from '@/components/screens/passenger-view';
 import DriverView from '@/components/screens/driver-view';
 import AdminDashboard from '@/components/screens/admin-dashboard';
-import LoginScreen from './(auth)/login/page';
 
 export default function Home() {
-  const { screen, user } = useContext(AppContext);
+  const { screen, user, setScreen } = useContext(AppContext);
   const router = useRouter();
 
   useEffect(() => {
     if (!user && (screen === 'passenger' || screen === 'driver' || screen === 'admin')) {
-        router.push('/login');
+        setScreen('welcome'); // or 'login'
     }
-  }, [user, screen, router]);
+  }, [user, screen, router, setScreen]);
 
   const renderScreen = () => {
     switch (screen) {
@@ -28,10 +27,11 @@ export default function Home() {
       case 'admin':
         return <AdminDashboard />;
       case 'login':
-        return <LoginScreen />;
+         router.push('/login');
+         return null; 
       case 'register':
          router.push('/register');
-         return null; // Redirecting
+         return null; 
       case 'welcome':
       default:
         return <WelcomeScreen />;

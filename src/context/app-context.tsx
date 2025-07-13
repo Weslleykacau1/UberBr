@@ -46,8 +46,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode);
-    document.body.className = isDarkMode ? 'bg-gray-900' : 'bg-gray-100';
+    if (typeof window !== 'undefined') {
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
   }, [isDarkMode]);
 
   const handleLogin = (email: string, password?: string) => {
