@@ -10,7 +10,7 @@ const navItems = [
 
 export function Footer() {
   return (
-    <footer className="bg-white border-t">
+    <footer className="bg-secondary border-t">
       <nav className="p-2 flex justify-around items-center">
         {navItems.map((item, index) => (
           <Button key={item.name} variant="ghost" className={`flex flex-col h-auto p-2 rounded-lg ${index === 0 ? 'text-primary' : 'text-muted-foreground'}`}>

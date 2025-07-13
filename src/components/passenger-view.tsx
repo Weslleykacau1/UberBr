@@ -5,16 +5,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Map } from "@/components/map"
-import { Car, Minus, Plus, Briefcase, User, Home, MapPin } from 'lucide-react'
+import { Car, Minus, Plus } from 'lucide-react'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Sidebar } from './sidebar'
-import { Menu } from 'lucide-react'
 
 const rideOptions = [
   {
@@ -46,10 +43,10 @@ export function PassengerView({ toggleView }: { toggleView: () => void }) {
       <div className="flex-grow relative">
         <Map />
         <div className="absolute top-4 right-4 flex flex-col gap-2">
-            <Button size="icon" className="bg-white text-gray-800 hover:bg-gray-100 rounded-lg shadow-md">
+            <Button size="icon" className="bg-card text-foreground hover:bg-secondary rounded-lg shadow-md">
                 <Plus className="w-5 h-5"/>
             </Button>
-            <Button size="icon" className="bg-white text-gray-800 hover:bg-gray-100 rounded-lg shadow-md">
+            <Button size="icon" className="bg-card text-foreground hover:bg-secondary rounded-lg shadow-md">
                 <Minus className="w-5 h-5"/>
             </Button>
         </div>
@@ -59,7 +56,7 @@ export function PassengerView({ toggleView }: { toggleView: () => void }) {
              </Button>
           </div>
       </div>
-      <Card className="w-full rounded-t-2xl rounded-b-none shadow-2xl border-t">
+      <Card className="w-full rounded-t-2xl rounded-b-none shadow-2xl border-t bg-secondary">
         <CardContent className="p-4">
           <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
             <AccordionItem value="item-1" className="border-b-0">
@@ -72,7 +69,7 @@ export function PassengerView({ toggleView }: { toggleView: () => void }) {
                     <button
                       key={ride.name}
                       className={`w-full text-left p-3 rounded-lg border-2 transition-all flex items-center gap-4 ${
-                        selectedRide === ride.name ? 'border-primary bg-primary/10' : 'border-transparent bg-secondary'
+                        selectedRide === ride.name ? 'border-primary bg-primary/10' : 'border-transparent bg-background'
                       }`}
                       onClick={() => setSelectedRide(ride.name)}
                     >
@@ -117,7 +114,7 @@ export function PassengerView({ toggleView }: { toggleView: () => void }) {
             </AccordionItem>
           </Accordion>
           
-          <Button size="lg" className="w-full h-12 text-lg mt-4 font-bold">
+          <Button size="lg" className="w-full h-12 text-lg mt-4 font-bold bg-accent text-accent-foreground hover:bg-accent/90">
              Solicitar {selectedRide}
           </Button>
         </CardContent>

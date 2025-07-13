@@ -31,7 +31,7 @@ export function DriverView({ toggleView }: { toggleView: () => void }) {
   const [isOnline, setIsOnline] = useState(true)
 
   return (
-    <div className="flex flex-col h-full w-full max-w-md mx-auto">
+    <div className="flex flex-col h-full w-full max-w-md mx-auto bg-background text-foreground">
       {/* Header */}
       <header className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -58,8 +58,8 @@ export function DriverView({ toggleView }: { toggleView: () => void }) {
       {/* Stats */}
       <section className="px-4 grid grid-cols-2 gap-4">
         {stats.map(stat => (
-          <div key={stat.name} className="bg-card p-4 rounded-lg flex items-center gap-4">
-            <div className="bg-secondary p-3 rounded-full">
+          <div key={stat.name} className="bg-secondary p-4 rounded-lg flex items-center gap-4">
+            <div className="bg-background/50 p-3 rounded-full">
               <stat.icon className="w-6 h-6 text-primary" />
             </div>
             <div>
@@ -73,7 +73,7 @@ export function DriverView({ toggleView }: { toggleView: () => void }) {
 
       {/* Bottom Nav */}
       <nav className="px-4 mt-4 mb-2">
-        <div className="bg-card rounded-xl p-2 flex justify-around items-center">
+        <div className="bg-secondary rounded-xl p-2 flex justify-around items-center">
             {navItems.map((item, index) => (
                 <Button key={item.name} variant="ghost" className={`flex flex-col h-auto p-2 ${index === 0 ? 'text-primary' : 'text-muted-foreground'}`}>
                     <item.icon className="w-6 h-6 mb-1" />

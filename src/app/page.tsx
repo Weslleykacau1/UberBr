@@ -18,8 +18,8 @@ export default function Home() {
   const isPassengerView = view === 'passenger';
 
   return (
-    <div className="flex flex-col h-screen bg-background max-w-md mx-auto">
-      {isPassengerView ? <Header /> : null}
+    <div className="flex flex-col h-screen bg-secondary max-w-md mx-auto">
+      {isPassengerView ? <Header toggleView={toggleView} /> : null}
       <main className="flex-grow relative">
         {isPassengerView ? (
           <PassengerView toggleView={toggleView}/>
