@@ -16,6 +16,7 @@ const userPosition = [-3.74, -38.54] as [number, number]; // Mock user position 
 
 interface MapComponentProps {
     center: [number, number];
+    mapId?: string;
     drivers?: typeof mockDrivers;
     userPos?: [number, number];
     rideRequest?: {
@@ -42,11 +43,11 @@ const fromIcon = new L.DivIcon({html: '<div class="bg-green-500 text-white font-
 const toIcon = new L.DivIcon({html: '<div class="bg-red-500 text-white font-bold w-8 h-8 flex items-center justify-center rounded-full border-2 border-white shadow-md">B</div>', className: '', iconSize: [32,32], iconAnchor: [16,16]});
 
 
-export default function MapComponent({ center, drivers, userPos, rideRequest }: MapComponentProps) {
+export default function MapComponent({ center, mapId, drivers, userPos, rideRequest }: MapComponentProps) {
     const routePositions = rideRequest ? [rideRequest.from.position, rideRequest.to.position] : [];
 
     return (
-        <MapContainer key={JSON.stringify(center)} center={center} zoom={14} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+        <MapContainer key={mapId || JSON.stringify(center)} center={center} zoom={14} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

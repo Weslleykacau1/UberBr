@@ -139,7 +139,7 @@ function RideRequestView({ from, to, onBack }: { from: string, to: string, onBac
         <div className="h-full flex flex-col">
             <div className="relative flex-grow">
                  <Suspense fallback={<div>Carregando mapa...</div>}>
-                    <DynamicMap key="passenger-map-request" center={fromPosition} rideRequest={{ from: {address: from, position: fromPosition}, to: {address: to, position: toPosition} }} />
+                    <DynamicMap mapId={`passenger-map-request-step-${step}`} center={fromPosition} rideRequest={{ from: {address: from, position: fromPosition}, to: {address: to, position: toPosition} }} />
                 </Suspense>
             </div>
             <Card className="rounded-t-2xl rounded-b-none p-4 border-t-4 border-primary shadow-lg">
