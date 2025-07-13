@@ -12,12 +12,12 @@ import {
   Car,
   Menu,
   ChevronDown,
-  Fuel,
   TriangleAlert,
   Layers,
   Shield,
   SlidersHorizontal,
-  ClipboardCheck
+  ClipboardCheck,
+  ArrowLeft,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -49,7 +49,7 @@ const weeklyEarningsData = [
   { day: 'Dom', 'Ganhos': 160 },
 ];
 
-function StatisticsView() {
+function StatisticsView({ onBack }: { onBack: () => void }) {
   return (
     <div>
       <div className="mb-6">
@@ -96,7 +96,7 @@ function StatisticsView() {
   );
 }
 
-function HomeView() {
+function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
   return (
     <div className="relative h-full w-full bg-gray-800 text-white">
       {/* Map Placeholder */}
@@ -106,7 +106,7 @@ function HomeView() {
 
       {/* Top UI Elements */}
       <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center">
-        <button className="bg-white p-2.5 rounded-full shadow-lg relative">
+        <button onClick={onMenuClick} className="bg-white p-2.5 rounded-full shadow-lg relative">
           <Menu size={24} className="text-black" />
           <span className="absolute -top-1 -right-1 block h-3 w-3 rounded-full bg-red-500 border-2 border-white"></span>
         </button>
@@ -212,15 +212,15 @@ export default function DriverView() {
   const renderContent = () => {
     switch (currentView) {
       case 'home':
-        return <HomeView />;
+        return <HomeView onMenuClick={() => setCurrentView('statistics')} />;
       case 'statistics':
-        return <StatisticsView />;
+        return <StatisticsView onBack={() => setCurrentView('home')} />;
       case 'wallet':
         return <WalletView />;
       case 'profile':
         return <ProfileView />;
       default:
-        return <HomeView />;
+        return <HomeView onMenuClick={() => setCurrentView('statistics')} />;
     }
   };
 
@@ -232,6 +232,11 @@ export default function DriverView() {
       <header className="p-4">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
+             {currentView === 'statistics' && (
+                <button onClick={() => setCurrentView('home')} className="mr-2">
+                    <ArrowLeft />
+                </button>
+            )}
             <Avatar className="border-2 border-lime-400">
               <AvatarImage
                 src={`https://i.pravatar.cc/150?u=${user?.email}`}
@@ -279,48 +284,43 @@ export default function DriverView() {
       </header>
       )}
 
-      <main className="flex-grow overflow-y-auto">
+      <main className="flex-grow overflow-y-auto p-4">
         {renderContent()}
       </main>
 
-      <footer className="bg-gray-800 p-2 flex justify-around">
-        <button
-          onClick={() => setCurrentView('home')}
-          className={`flex flex-col items-center p-2 rounded-lg w-1/4 ${
-            currentView === 'home' ? 'text-lime-400' : 'text-gray-400'
-          }`}
-        >
-          <Home />
-          <span className="text-xs mt-1">Início</span>
-        </button>
-        <button
-          onClick={() => setCurrentView('statistics')}
-          className={`flex flex-col items-center p-2 rounded-lg w-1/4 ${
-            currentView === 'statistics' ? 'text-lime-400' : 'text-gray-400'
-          }`}
-        >
-          <BarChart2 />
-          <span className="text-xs mt-1">Estatísticas</span>
-        </button>
-        <button
-          onClick={() => setCurrentView('wallet')}
-          className={`flex flex-col items-center p-2 rounded-lg w-1/4 ${
-            currentView === 'wallet' ? 'text-lime-400' : 'text-gray-400'
-          }`}
-        >
-          <Wallet />
-          <span className="text-xs mt-1">Carteira</span>
-        </button>
-        <button
-          onClick={() => setCurrentView('profile')}
-          className={`flex flex-col items-center p-2 rounded-lg w-1/4 ${
-            currentView === 'profile' ? 'text-lime-400' : 'text-gray-400'
-          }`}
-        >
-          <User />
-          <span className="text-xs mt-1">Perfil</span>
-        </button>
-      </footer>
+      {FullScreenContent.includes(currentView) ? null : (
+        <footer className="bg-gray-800 p-2 flex justify-around">
+          <button
+            onClick={() => setCurrentView('home')}
+            className={`flex flex-col items-center p-2 rounded-lg w-1/3 ${
+              currentView === 'home' ? 'text-lime-400' : 'text-gray-400'
+            }`}
+          >
+            <Home />
+            <span className="text-xs mt-1">Início</span>
+          </button>
+          <button
+            onClick={() => setCurrentView('wallet')}
+            className={`flex flex-col items-center p-2 rounded-lg w-1/3 ${
+              currentView === 'wallet' ? 'text-lime-400' : 'text-gray-400'
+            }`}
+          >
+            <Wallet />
+            <span className="text-xs mt-1">Carteira</span>
+          </button>
+          <button
+            onClick={() => setCurrentView('profile')}
+            className={`flex flex-col items-center p-2 rounded-lg w-1/3 ${
+              currentView === 'profile' ? 'text-lime-400' : 'text-gray-400'
+            }`}
+          >
+            <User />
+            <span className="text-xs mt-1">Perfil</span>
+          </button>
+        </footer>
+      )}
     </div>
   );
 }
+
+    
