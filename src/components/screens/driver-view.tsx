@@ -1,6 +1,5 @@
 'use client';
 import React, { useState, useContext } from 'react';
-import Image from 'next/image';
 import { AppContext } from '@/context/app-context';
 import {
   Home,
@@ -9,105 +8,79 @@ import {
   User,
   Star,
   DollarSign,
-  TrendingUp,
-  CheckCircle,
   Car,
-  TrendingDown,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import GeminiSuggestionModal from '@/components/gemini-modal';
+import { Progress } from '@/components/ui/progress';
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from 'recharts';
 
-// Mock Data for the new UI
 const driverStats = {
   todayEarnings: 156.5,
   todayRides: 8,
-  weeklyEarnings: 1245.8,
-  completionRate: 95,
-  totalRides: 1247,
   rating: 4.8,
+  acceptanceRate: 92,
+  cancellationRate: 5,
 };
 
-const rideRequest = {
-  from: {
-    address: 'Rua Democrata, 1804 (Granja Portugal, Fortaleza - CE)',
-    position: [-3.768, -38.59] as [number, number],
-  },
-  to: {
-    address: 'Rua José Pedra, 1515 (Parque Dois Irmãos, Fortaleza - CE)',
-    position: [-3.79, -38.56] as [number, number],
-  },
-  price: 15,
-  distance: 5.6,
-  user: { name: 'Antônio', rating: 4.8 },
-};
-
-function StatCard({
-  icon,
-  label,
-  value,
-  trendIcon,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  trendIcon?: React.ReactNode;
-}) {
-  return (
-    <div className="bg-gray-800 p-4 rounded-lg flex flex-col justify-between">
-      <div className="flex justify-between items-start">
-        <div className="text-gray-400">{icon}</div>
-        <div className="text-green-400">{trendIcon}</div>
-      </div>
-      <div>
-        <p className="text-2xl font-bold mt-2">{value}</p>
-        <p className="text-sm text-gray-400">{label}</p>
-      </div>
-    </div>
-  );
-}
+const weeklyEarningsData = [
+  { day: 'Seg', earnings: 120 },
+  { day: 'Ter', 'Ganhos': 180 },
+  { day: 'Qua', 'Ganhos': 100 },
+  { day: 'Qui', 'Ganhos': 220 },
+  { day: 'Sex', 'Ganhos': 250 },
+  { day: 'Sáb', 'Ganhos': 190 },
+  { day: 'Dom', 'Ganhos': 160 },
+];
 
 function StatisticsView() {
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Estatísticas</h2>
-      <div className="grid grid-cols-2 gap-4">
-        <StatCard
-          icon={<DollarSign size={20} />}
-          label="Ganhos Semanais"
-          value={`R$ ${driverStats.weeklyEarnings.toFixed(2).replace('.', ',')}`}
-          trendIcon={<TrendingUp size={16} />}
-        />
-        <StatCard
-          icon={<CheckCircle size={20} />}
-          label="Taxa Conclusão"
-          value={`${driverStats.completionRate}%`}
-          trendIcon={<TrendingUp size={16} />}
-        />
-        <StatCard
-          icon={<Car size={20} />}
-          label="Total Corridas"
-          value={driverStats.totalRides.toString()}
-          trendIcon={<TrendingUp size={16} />}
-        />
-        <StatCard
-          icon={<Star size={20} />}
-          label="Avaliação"
-          value={driverStats.rating.toString()}
-          trendIcon={<TrendingDown size={16} />}
-        />
-      </div>
-      <div className="mt-8">
+      <div className="mb-6">
         <h3 className="text-xl font-bold mb-4">Ganhos da Semana</h3>
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <Image
-            src="https://placehold.co/600x300.png"
-            alt="Weekly earnings chart"
-            width={600}
-            height={300}
-            className="w-full h-auto"
-            data-ai-hint="bar chart"
-          />
+        <div className="bg-gray-800 p-4 rounded-lg h-[250px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={weeklyEarningsData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+              <XAxis dataKey="day" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#333',
+                  border: 'none',
+                  borderRadius: '8px',
+                }}
+                labelStyle={{ color: '#fff' }}
+                cursor={{ fill: 'rgba(163, 230, 53, 0.1)' }}
+              />
+              <Bar dataKey="Ganhos" fill="#a3e635" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-xl font-bold mb-4">Métricas de Performance</h3>
+        <div className="bg-gray-800 p-4 rounded-lg space-y-6">
+           <div>
+             <div className="flex justify-between items-center mb-1">
+               <p className="text-gray-300">Taxa de Aceitação</p>
+               <p className="font-semibold text-green-400">{driverStats.acceptanceRate}%</p>
+             </div>
+             <Progress value={driverStats.acceptanceRate} className="h-2 [&>div]:bg-green-400" />
+           </div>
+           <div>
+             <div className="flex justify-between items-center mb-1">
+               <p className="text-gray-300">Taxa de Cancelamento</p>
+               <p className="font-semibold text-red-500">{driverStats.cancellationRate}%</p>
+             </div>
+             <Progress value={driverStats.cancellationRate} className="h-2 [&>div]:bg-red-500" />
+           </div>
         </div>
       </div>
     </div>
@@ -115,19 +88,26 @@ function StatisticsView() {
 }
 
 function HomeView() {
+  const rideRequest = {
+    from: {
+      address: 'Rua Democrata, 1804 (Granja Portugal, Fortaleza - CE)',
+      position: [-3.768, -38.59] as [number, number],
+    },
+    to: {
+      address: 'Rua José Pedra, 1515 (Parque Dois Irmãos, Fortaleza - CE)',
+      position: [-3.79, -38.56] as [number, number],
+    },
+    price: 15,
+    distance: 5.6,
+    user: { name: 'Antônio', rating: 4.8 },
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Pedido de Viagem</h2>
       <div className="bg-gray-800 rounded-lg overflow-hidden">
-        <div className="h-64 w-full">
-          <Image
-            src="https://placehold.co/800x600.png"
-            alt="Map placeholder"
-            width={800}
-            height={600}
-            className="w-full h-full object-cover"
-            data-ai-hint="map city"
-          />
+        <div className="h-64 w-full bg-gray-700 flex items-center justify-center">
+            <p className="text-gray-500">O mapa foi desativado temporariamente.</p>
         </div>
         <div className="p-4">
           <div className="flex justify-between items-start">
@@ -198,9 +178,9 @@ function WalletView() {
 function ProfileView() {
   const { user, handleLogout } = useContext(AppContext);
   return (
-    <div className="text-center">
+    <div className="text-center p-4">
       <h2 className="text-2xl font-bold mb-4">Perfil</h2>
-      <Avatar className="w-24 h-24 mx-auto mb-4">
+      <Avatar className="w-24 h-24 mx-auto mb-4 border-4 border-lime-400">
         <AvatarImage
           src={`https://i.pravatar.cc/150?u=${user?.email}`}
           alt={user?.name}
@@ -209,6 +189,22 @@ function ProfileView() {
       </Avatar>
       <h3 className="text-xl font-bold">{user?.name}</h3>
       <p className="text-gray-400">{user?.email}</p>
+      <div className="mt-6 bg-gray-800 p-4 rounded-lg">
+        <div className="flex justify-around text-center">
+          <div>
+            <p className="text-2xl font-bold">{driverStats.rating}</p>
+            <p className="text-sm text-gray-400">Avaliação</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold">{driverStats.acceptanceRate}%</p>
+            <p className="text-sm text-gray-400">Aceitação</p>
+          </div>
+           <div>
+            <p className="text-2xl font-bold">{driverStats.cancellationRate}%</p>
+            <p className="text-sm text-gray-400">Cancelamento</p>
+          </div>
+        </div>
+      </div>
       <button
         onClick={handleLogout}
         className="mt-8 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg"
@@ -220,13 +216,9 @@ function ProfileView() {
 }
 
 export default function DriverView() {
-  const { user, isDarkMode, toggleDarkMode } = useContext(AppContext);
+  const { user } = useContext(AppContext);
   const [isOnline, setIsOnline] = useState(false);
-  const [currentView, setCurrentView] = useState('statistics'); // home, statistics, wallet, profile
-
-  if (isDarkMode === undefined) {
-    return null;
-  }
+  const [currentView, setCurrentView] = useState('statistics');
 
   const renderContent = () => {
     switch (currentView) {
@@ -248,7 +240,7 @@ export default function DriverView() {
       <header className="p-4">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
-            <Avatar>
+            <Avatar className="border-2 border-lime-400">
               <AvatarImage
                 src={`https://i.pravatar.cc/150?u=${user?.email}`}
                 alt={user?.name}
@@ -280,15 +272,15 @@ export default function DriverView() {
         </div>
         <div className="grid grid-cols-2 gap-4 text-center">
           <div className="bg-gray-800 p-3 rounded-lg">
-            <p className="text-xs text-gray-400">Hoje</p>
-            <p className="text-xl font-bold">
+            <p className="text-xs text-gray-400 flex items-center justify-center gap-1"><DollarSign size={14}/> Hoje</p>
+            <p className="text-2xl font-bold">
               R$ {driverStats.todayEarnings.toFixed(2).replace('.', ',')}
             </p>
             <p className="text-xs text-gray-400">Ganhos</p>
           </div>
           <div className="bg-gray-800 p-3 rounded-lg">
-            <p className="text-xs text-gray-400">Hoje</p>
-            <p className="text-xl font-bold">{driverStats.todayRides}</p>
+            <p className="text-xs text-gray-400 flex items-center justify-center gap-1"><Car size={14}/> Hoje</p>
+            <p className="text-2xl font-bold">{driverStats.todayRides}</p>
             <p className="text-xs text-gray-400">Corridas</p>
           </div>
         </div>
