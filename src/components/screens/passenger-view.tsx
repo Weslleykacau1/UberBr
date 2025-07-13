@@ -1,12 +1,13 @@
 'use client';
 import React, { useState, useContext, useEffect, Suspense } from 'react';
 import { AppContext } from '@/context/app-context';
-import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Grid2x2, Home, BarChart2 } from 'lucide-react';
+import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Grid2x2, Home, BarChart2, Repeat, Star } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import PaymentOption from '@/components/payment-option';
 import dynamic from 'next/dynamic';
+import { Badge } from '../ui/badge';
 
 const DynamicMap = dynamic(() => import('@/components/dynamic-map'), {
     ssr: false,
@@ -19,6 +20,40 @@ const rideOptions = [
   { name: 'Comfort', price: 'R$ 18,50', eta: '7 min', icon: 'https://placehold.co/40x40.png' },
   { name: 'Black', price: 'R$ 25,00', eta: '6 min', icon: 'https://placehold.co/40x40.png' },
 ];
+
+const mockRideHistory = [
+  {
+    id: 1,
+    date: 'Hoje, 15:30',
+    from: 'Shopping Iguatemi',
+    to: 'Praia de Iracema',
+    price: 'R$ 18,50',
+    driver: { name: 'Bruno', car: 'Chevrolet Onix' },
+    status: 'Concluída',
+    icon: 'https://placehold.co/40x40.png'
+  },
+  {
+    id: 2,
+    date: 'Ontem, 10:15',
+    from: 'Av. Bezerra de Menezes, 1850',
+    to: 'Aeroporto de Fortaleza',
+    price: 'R$ 25,00',
+    driver: { name: 'Lúcia', car: 'Hyundai HB20' },
+    status: 'Concluída',
+    icon: 'https://placehold.co/40x40.png'
+  },
+  {
+    id: 3,
+    date: '25/06/2024',
+    from: 'North Shopping',
+    to: 'Terminal Papicu',
+    price: 'R$ 15,00',
+    driver: { name: 'Carlos', car: 'Fiat Cronos' },
+    status: 'Cancelada',
+    icon: 'https://placehold.co/40x40.png'
+  },
+];
+
 
 function RideRequestView({ from, to, onBack }: { from: string, to: string, onBack: () => void }) {
     const [step, setStep] = useState(1);
@@ -226,6 +261,53 @@ function HomeView({ onSearch }: { onSearch: (from: string, to: string) => void }
     );
 }
 
+function ActivityView() {
+    return (
+        <div className="p-4 space-y-4">
+            <h2 className="text-2xl font-bold">Atividade</h2>
+            {mockRideHistory.map((ride) => (
+                <Card key={ride.id} className="overflow-hidden">
+                    <CardContent className="p-4 flex flex-col gap-4">
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-4">
+                                <Image src={ride.icon} width={40} height={40} alt="Ride icon" data-ai-hint="car icon" className="rounded-lg"/>
+                                <div>
+                                    <p className="font-bold">{ride.to}</p>
+                                    <p className="text-sm text-muted-foreground">{ride.date}</p>
+                                </div>
+                            </div>
+                            <Badge variant={ride.status === 'Concluída' ? 'default' : 'destructive'} className={`${ride.status === 'Concluída' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{ride.status}</Badge>
+                        </div>
+                         <div className="border-t pt-4 space-y-3 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">De</span>
+                                <span>{ride.from}</span>
+                            </div>
+                             <div className="flex justify-between">
+                                <span className="text-muted-foreground">Para</span>
+                                <span>{ride.to}</span>
+                            </div>
+                             <div className="flex justify-between">
+                                <span className="text-muted-foreground">Motorista</span>
+                                <span>{ride.driver.name} ({ride.driver.car})</span>
+                            </div>
+                             <div className="flex justify-between font-bold">
+                                <span>Total (PIX)</span>
+                                <span>{ride.price}</span>
+                            </div>
+                        </div>
+
+                         <div className="flex gap-2 pt-4 border-t">
+                            <Button variant="outline" className="w-full"><Repeat size={16}/> Pedir de novo</Button>
+                            <Button variant="outline" className="w-full"><Star size={16}/> Avaliar</Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    );
+}
+
 
 export default function PassengerView() {
     const { user, handleLogout } = useContext(AppContext);
@@ -255,7 +337,7 @@ export default function PassengerView() {
             case 'home':
                 return <HomeView onSearch={handleSearch} />;
             case 'options': return <div className="p-4 text-center">Opções</div>;
-            case 'activity': return <div className="p-4 text-center">Atividade</div>;
+            case 'activity': return <ActivityView />;
             case 'account': return <div className="p-4 text-center">Conta</div>;
             default: return null;
         }
@@ -290,5 +372,3 @@ export default function PassengerView() {
         </div>
     );
 }
-
-    
