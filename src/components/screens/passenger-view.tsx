@@ -520,7 +520,3 @@ export default function PassengerView() {
         </div>
     );
 }
-
-
-    
-    
