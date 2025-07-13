@@ -14,7 +14,13 @@ export default function Home() {
 
   useEffect(() => {
     if (!user && (screen === 'passenger' || screen === 'driver' || screen === 'admin')) {
-        setScreen('welcome'); // or 'login'
+        setScreen('welcome');
+    }
+    
+    if (screen === 'login') {
+      router.push('/login');
+    } else if (screen === 'register') {
+      router.push('/register');
     }
   }, [user, screen, router, setScreen]);
 
@@ -26,12 +32,6 @@ export default function Home() {
         return <DriverView />;
       case 'admin':
         return <AdminDashboard />;
-      case 'login':
-         router.push('/login');
-         return null; 
-      case 'register':
-         router.push('/register');
-         return null; 
       case 'welcome':
       default:
         return <WelcomeScreen />;
