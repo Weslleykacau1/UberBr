@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 
-const MASTER_PASSWORD = process.env.MASTER_PASSWORD || 'password';
+const MASTER_PASSWORD = process.env.MASTER_PASSWORD || 'u7p5h3t8r';
 const AUTH_COOKIE_NAME = 'dev-auth';
 
 export async function POST(request: NextRequest) {
