@@ -45,6 +45,9 @@ export default function AdminDashboard() {
                                             <button onClick={() => openDocument(p.folhaCorridaUrl)} className="flex items-center text-sm bg-gray-600 hover:bg-gray-500 text-white font-semibold py-1 px-3 rounded-md"><FileText size={16} className="mr-1"/> F. Corrida</button>
                                         </>
                                     )}
+                                     {p.role === 'passenger' && (
+                                        <button onClick={() => openDocument(p.passengerIdUrl)} className="flex items-center text-sm bg-gray-600 hover:bg-gray-500 text-white font-semibold py-1 px-3 rounded-md"><FileText size={16} className="mr-1"/> Ver ID</button>
+                                    )}
                                     <button onClick={() => handleApproval(p.id, 'approved')} className="p-2 bg-green-600 hover:bg-green-500 rounded-full"><CheckCircle size={20} /></button>
                                     <button onClick={() => handleApproval(p.id, 'rejected')} className="p-2 bg-red-600 hover:bg-red-500 rounded-full"><XCircle size={20} /></button>
                                 </div>

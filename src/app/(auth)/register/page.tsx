@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, UserPlus } from 'lucide-react';
+import { ArrowLeft, UserPlus, Upload } from 'lucide-react';
 import { AppContext } from '@/context/app-context';
 
 export default function RegisterScreen() {
@@ -9,12 +9,13 @@ export default function RegisterScreen() {
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [role, setRole] = useState('passenger');
+    const [passengerIdUrl, setPassengerIdUrl] = useState('');
     const { handleRegister, setScreen } = useContext(AppContext);
     const router = useRouter();
 
     const handleSubmit = (e: React.FormEvent) => { 
         e.preventDefault(); 
-        handleRegister({ email, password, name, role }); 
+        handleRegister({ email, password, name, role, passengerIdUrl }); 
     };
     
     const handleBack = () => {
@@ -37,17 +38,29 @@ export default function RegisterScreen() {
                     <label className="block text-gray-400 text-sm font-bold mb-2" htmlFor="email">Email</label>
                     <input className="shadow appearance-none border rounded w-full py-3 px-4 bg-gray-800 border-gray-700 text-white focus:outline-none focus:shadow-outline focus:border-lime-400" id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 </div>
-                <div className="mb-6">
+                <div className="mb-4">
                     <label className="block text-gray-400 text-sm font-bold mb-2" htmlFor="password">Senha</label>
                     <input className="shadow appearance-none border rounded w-full py-3 px-4 bg-gray-800 border-gray-700 text-white focus:outline-none focus:shadow-outline focus:border-lime-400" id="password" type="password" placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 </div>
-                <div className="mb-6">
+                <div className="mb-4">
                     <label className="block text-gray-400 text-sm font-bold mb-2">Eu sou</label>
                     <div className="flex rounded-lg bg-gray-800 p-1">
                         <button type="button" onClick={() => setRole('passenger')} className={`w-1/2 py-2 rounded-md font-semibold transition-colors ${role === 'passenger' ? 'bg-lime-400 text-gray-900' : 'text-white'}`}>Passageiro</button>
                         <button type="button" onClick={() => setRole('driver')} className={`w-1/2 py-2 rounded-md font-semibold transition-colors ${role === 'driver' ? 'bg-lime-400 text-gray-900' : 'text-white'}`}>Motorista</button>
                     </div>
                 </div>
+
+                {role === 'passenger' && (
+                    <div className="mb-6">
+                        <label className="block text-gray-400 text-sm font-bold mb-2" htmlFor="passengerId">Documento de Identidade (ID)</label>
+                        <p className="text-xs text-gray-500 mb-2">Para sua segurança, precisamos verificar sua identidade. Você deve ter mais de 18 anos.</p>
+                        <div className="flex items-center bg-gray-800 border-gray-700 border rounded py-3 px-4">
+                            <Upload className="text-gray-400 mr-2" size={16}/>
+                            <span className="text-gray-500 text-sm">Clique para enviar...</span>
+                        </div>
+                    </div>
+                )}
+                
                 <div className="flex flex-col items-center justify-between">
                     <button className="w-full bg-lime-400 hover:bg-lime-500 text-gray-900 font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-transform transform hover:scale-105" type="submit"><UserPlus className="inline-block mr-2" /> Cadastrar</button>
                     <button onClick={() => router.push('/login')} className="inline-block align-baseline font-bold text-sm text-lime-400 hover:text-lime-500 mt-4">Já tem uma conta? Faça login</button>
