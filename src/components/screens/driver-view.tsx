@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { AppContext } from '@/context/app-context';
 import {
   Home,
-  BarChart2,
   Wallet,
   User,
   Star,
@@ -16,12 +15,11 @@ import {
   Layers,
   Shield,
   SlidersHorizontal,
-  ClipboardCheck,
-  ArrowLeft,
   History,
   PhoneCall,
   Zap,
   Luggage,
+  ArrowLeft
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,6 +35,7 @@ import {
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 
 
 const driverStats = {
@@ -59,41 +58,42 @@ const weeklyEarningsData = [
 
 function StatisticsView({ onBack }: { onBack: () => void }) {
   return (
-    <div>
+    <div className="p-4">
       <div className="mb-6">
         <h3 className="text-xl font-bold mb-4">Ganhos da Semana</h3>
-        <div className="bg-gray-800 p-4 rounded-lg h-[250px]">
+        <div className="bg-card p-4 rounded-lg h-[250px] shadow-sm">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weeklyEarningsData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-              <XAxis dataKey="day" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
+            <BarChart data={weeklyEarningsData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+              <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#333',
-                  border: 'none',
-                  borderRadius: '8px',
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '0.5rem',
+                  color: 'hsl(var(--card-foreground))'
                 }}
-                labelStyle={{ color: '#fff' }}
-                cursor={{ fill: 'rgba(163, 230, 53, 0.1)' }}
+                labelStyle={{ color: 'hsl(var(--card-foreground))' }}
+                cursor={{ fill: 'hsl(var(--primary) / 0.1)' }}
               />
-              <Bar dataKey="Ganhos" fill="#a3e635" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Ganhos" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
       <div>
         <h3 className="text-xl font-bold mb-4">Métricas de Performance</h3>
-        <div className="bg-gray-800 p-4 rounded-lg space-y-6">
+        <div className="bg-card p-4 rounded-lg space-y-6 shadow-sm">
            <div>
              <div className="flex justify-between items-center mb-1">
-               <p className="text-gray-300">Taxa de Aceitação</p>
-               <p className="font-semibold text-green-400">{driverStats.acceptanceRate}%</p>
+               <p className="text-muted-foreground">Taxa de Aceitação</p>
+               <p className="font-semibold text-green-500">{driverStats.acceptanceRate}%</p>
              </div>
-             <Progress value={driverStats.acceptanceRate} className="h-2 [&>div]:bg-green-400" />
+             <Progress value={driverStats.acceptanceRate} className="h-2 [&>div]:bg-green-500" />
            </div>
            <div>
              <div className="flex justify-between items-center mb-1">
-               <p className="text-gray-300">Taxa de Cancelamento</p>
+               <p className="text-muted-foreground">Taxa de Cancelamento</p>
                <p className="font-semibold text-red-500">{driverStats.cancellationRate}%</p>
              </div>
              <Progress value={driverStats.cancellationRate} className="h-2 [&>div]:bg-red-500" />
@@ -113,33 +113,30 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
   };
 
   return (
-    <div className="relative h-full w-full bg-gray-800 text-white">
-      {/* Map Placeholder */}
+    <div className="relative h-full w-full bg-secondary text-foreground">
       <div className="absolute inset-0 z-0">
         <Image src="https://placehold.co/600x1200.png" layout="fill" objectFit="cover" alt="Map placeholder" data-ai-hint="map city" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
       </div>
 
-      {/* Top UI Elements */}
       <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center">
-        <button onClick={onMenuClick} className="bg-white p-2.5 rounded-full shadow-lg relative">
-          <Menu size={24} className="text-black" />
-          <span className="absolute -top-1 -right-1 block h-3 w-3 rounded-full bg-red-500 border-2 border-white"></span>
-        </button>
-        <button className="bg-gray-900 text-white px-6 py-2.5 rounded-full shadow-lg flex items-center font-bold text-lg">
+        <Button onClick={onMenuClick} size="icon" className="bg-card text-card-foreground rounded-full shadow-lg">
+          <Menu size={20} />
+        </Button>
+        <Button className="bg-card text-card-foreground px-6 py-2.5 rounded-full shadow-lg font-bold text-lg">
           R$0,00 <ChevronDown size={20} className="ml-1" />
-        </button>
+        </Button>
       </div>
 
-      {/* Side Action Buttons */}
       <div className="absolute top-1/2 -translate-y-1/2 right-4 z-10 flex flex-col space-y-3">
-        <button className="bg-white p-3 rounded-full shadow-lg"><TriangleAlert className="text-black" /></button>
-        <button className="bg-white p-3 rounded-full shadow-lg"><Layers className="text-black" /></button>
+        <Button size="icon" className="bg-card text-card-foreground rounded-full shadow-lg"><TriangleAlert /></Button>
+        <Button size="icon" className="bg-card text-card-foreground rounded-full shadow-lg"><Layers /></Button>
       </div>
       
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <div className="absolute bottom-1/2 left-4 z-10">
-              <button className="bg-white p-3 rounded-full shadow-lg"><Shield className="text-red-600" /></button>
+              <Button size="icon" className="bg-card text-destructive rounded-full shadow-lg"><Shield /></Button>
           </div>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -158,7 +155,6 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Ride Preferences Modal */}
       <AlertDialog open={showPreferences} onOpenChange={setShowPreferences}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -168,23 +164,23 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4 space-y-4">
-             <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg">
+             <div className="flex items-center space-x-3 p-3 bg-secondary rounded-lg">
                 <Checkbox id="flash" checked={preferences.flash} onCheckedChange={() => handlePreferenceChange('flash')}/>
-                <Label htmlFor="flash" className="flex items-center gap-2 cursor-pointer text-base">
-                  <Zap className="text-yellow-400" />
+                <Label htmlFor="flash" className="flex items-center gap-2 cursor-pointer text-base w-full">
+                  <Zap className="text-yellow-500" />
                   <div>
                     <p className="font-semibold">Corrida Flash</p>
-                    <p className="text-xs text-gray-400">Viagens rápidas, sem porta-malas grande.</p>
+                    <p className="text-xs text-muted-foreground">Viagens rápidas, sem porta-malas grande.</p>
                   </div>
                 </Label>
               </div>
-              <div className="flex items-center space-x-3 p-3 bg-gray-800 rounded-lg">
+              <div className="flex items-center space-x-3 p-3 bg-secondary rounded-lg">
                 <Checkbox id="comfort" checked={preferences.comfort} onCheckedChange={() => handlePreferenceChange('comfort')} />
-                <Label htmlFor="comfort" className="flex items-center gap-2 cursor-pointer text-base">
-                  <Luggage className="text-blue-400" />
+                <Label htmlFor="comfort" className="flex items-center gap-2 cursor-pointer text-base w-full">
+                  <Luggage className="text-blue-500" />
                   <div>
                     <p className="font-semibold">Corrida Conforto</p>
-                    <p className="text-xs text-gray-400">Viagens com porta-malas grande.</p>
+                    <p className="text-xs text-muted-foreground">Viagens com porta-malas grande.</p>
                   </div>
                 </Label>
               </div>
@@ -196,13 +192,12 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
       </AlertDialog>
 
 
-      {/* Bottom Sheet */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 bg-white text-black p-4 rounded-t-2xl shadow-[-2px_-5px_15px_rgba(0,0,0,0.2)]">
-        <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-4"></div>
+      <div className="absolute bottom-0 left-0 right-0 z-10 bg-card text-card-foreground p-4 rounded-t-2xl shadow-[0_-5px_15px_-3px_rgba(0,0,0,0.1)]">
+        <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-4"></div>
         <div className="flex items-center justify-between">
-          <button onClick={() => setShowPreferences(true)} className="p-3"><SlidersHorizontal size={28} /></button>
-          <button className="flex-1 bg-yellow-400 text-black font-bold text-lg py-3 rounded-full mx-4">Conectar</button>
-          <button className="p-3"><History size={28} /></button>
+          <Button onClick={() => setShowPreferences(true)} size="icon" variant="ghost" className="rounded-full"><SlidersHorizontal /></Button>
+          <Button className="flex-1 bg-primary text-primary-foreground font-bold text-lg py-3 h-auto rounded-full mx-4">Conectar</Button>
+          <Button size="icon" variant="ghost" className="rounded-full"><History /></Button>
         </div>
       </div>
     </div>
@@ -212,23 +207,23 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
 
 function WalletView() {
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Carteira</h2>
-      <div className="bg-gray-800 p-6 rounded-xl mb-4 text-center">
-        <p className="text-gray-400 text-sm">Saldo</p>
+    <div className="p-4 space-y-4">
+      <h2 className="text-2xl font-bold">Carteira</h2>
+      <div className="bg-card p-6 rounded-xl shadow-sm text-center">
+        <p className="text-muted-foreground text-sm">Saldo</p>
         <p className="text-4xl font-bold my-2">R$ 4,71</p>
-        <button className="w-full bg-lime-400 text-gray-900 font-bold py-3 rounded-lg mt-2">
+        <Button className="w-full mt-2">
           Recarregar
-        </button>
+        </Button>
       </div>
-      <div className="bg-gray-800 p-6 rounded-xl text-center">
-        <p className="text-gray-400 text-sm">Saques</p>
+      <div className="bg-card p-6 rounded-xl shadow-sm text-center">
+        <p className="text-muted-foreground text-sm">Saques</p>
         <p className="text-4xl font-bold my-2">R$ 0,00</p>
-        <p className="text-gray-500">Nada a retirar ainda</p>
+        <p className="text-muted-foreground">Nada a retirar ainda</p>
       </div>
-      <div className="bg-gray-800 p-4 rounded-lg mt-4 flex justify-between items-center cursor-pointer">
+      <div className="bg-card p-4 rounded-lg flex justify-between items-center cursor-pointer shadow-sm">
         <p className="font-semibold">Formas de pagamento</p>
-        <span className="text-gray-400">{'>'}</span>
+        <span className="text-muted-foreground">{'>'}</span>
       </div>
     </div>
   );
@@ -239,7 +234,7 @@ function ProfileView() {
   return (
     <div className="text-center p-4">
       <h2 className="text-2xl font-bold mb-4">Perfil</h2>
-      <Avatar className="w-24 h-24 mx-auto mb-4 border-4 border-lime-400">
+      <Avatar className="w-24 h-24 mx-auto mb-4 border-4 border-primary">
         <AvatarImage
           src={`https://i.pravatar.cc/150?u=${user?.email}`}
           alt={user?.name}
@@ -247,29 +242,30 @@ function ProfileView() {
         <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
       </Avatar>
       <h3 className="text-xl font-bold">{user?.name}</h3>
-      <p className="text-gray-400">{user?.email}</p>
-      <div className="mt-6 bg-gray-800 p-4 rounded-lg">
+      <p className="text-muted-foreground">{user?.email}</p>
+      <div className="mt-6 bg-card p-4 rounded-lg shadow-sm">
         <div className="flex justify-around text-center">
           <div>
             <p className="text-2xl font-bold">{driverStats.rating}</p>
-            <p className="text-sm text-gray-400">Avaliação</p>
+            <p className="text-sm text-muted-foreground">Avaliação</p>
           </div>
           <div>
             <p className="text-2xl font-bold">{driverStats.acceptanceRate}%</p>
-            <p className="text-sm text-gray-400">Aceitação</p>
+            <p className="text-sm text-muted-foreground">Aceitação</p>
           </div>
            <div>
             <p className="text-2xl font-bold">{driverStats.cancellationRate}%</p>
-            <p className="text-sm text-gray-400">Cancelamento</p>
+            <p className="text-sm text-muted-foreground">Cancelamento</p>
           </div>
         </div>
       </div>
-      <button
+      <Button
         onClick={handleLogout}
-        className="mt-8 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg"
+        variant="destructive"
+        className="mt-8 w-full"
       >
         Sair
-      </button>
+      </Button>
     </div>
   );
 }
@@ -297,9 +293,9 @@ export default function DriverView() {
   const FullScreenContent = ['home'];
 
   return (
-    <div className="h-full flex flex-col bg-gray-900 text-white">
+    <div className="h-full flex flex-col bg-background text-foreground">
       {!FullScreenContent.includes(currentView) && (
-      <header className="p-4">
+      <header className="p-4 bg-card shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
              {currentView === 'statistics' && (
@@ -307,7 +303,7 @@ export default function DriverView() {
                     <ArrowLeft />
                 </button>
             )}
-            <Avatar className="border-2 border-lime-400">
+            <Avatar className="border-2 border-primary">
               <AvatarImage
                 src={`https://i.pravatar.cc/150?u=${user?.email}`}
                 alt={user?.name}
@@ -316,7 +312,7 @@ export default function DriverView() {
             </Avatar>
             <div>
               <h1 className="text-lg font-bold">Olá, {user?.name || 'Motorista'}</h1>
-              <div className="flex items-center gap-1 text-sm text-yellow-400">
+              <div className="flex items-center gap-1 text-sm text-yellow-500">
                 <Star size={14} className="fill-current" />
                 <span>{driverStats.rating}</span>
               </div>
@@ -325,7 +321,7 @@ export default function DriverView() {
           <div className="flex items-center gap-2">
             <span
               className={`text-sm font-semibold ${
-                isOnline ? 'text-lime-400' : 'text-gray-400'
+                isOnline ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
               {isOnline ? 'Online' : 'Offline'}
@@ -338,32 +334,32 @@ export default function DriverView() {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4 text-center">
-          <div className="bg-gray-800 p-3 rounded-lg">
-            <p className="text-xs text-gray-400 flex items-center justify-center gap-1"><DollarSign size={14}/> Hoje</p>
+          <div className="bg-background p-3 rounded-lg border">
+            <p className="text-xs text-muted-foreground flex items-center justify-center gap-1"><DollarSign size={14}/> Hoje</p>
             <p className="text-2xl font-bold">
               R$ {driverStats.todayEarnings.toFixed(2).replace('.', ',')}
             </p>
-            <p className="text-xs text-gray-400">Ganhos</p>
+            <p className="text-xs text-muted-foreground">Ganhos</p>
           </div>
-          <div className="bg-gray-800 p-3 rounded-lg">
-            <p className="text-xs text-gray-400 flex items-center justify-center gap-1"><Car size={14}/> Hoje</p>
+          <div className="bg-background p-3 rounded-lg border">
+            <p className="text-xs text-muted-foreground flex items-center justify-center gap-1"><Car size={14}/> Hoje</p>
             <p className="text-2xl font-bold">{driverStats.todayRides}</p>
-            <p className="text-xs text-gray-400">Corridas</p>
+            <p className="text-xs text-muted-foreground">Corridas</p>
           </div>
         </div>
       </header>
       )}
 
-      <main className="flex-grow overflow-y-auto p-4">
+      <main className="flex-grow overflow-y-auto">
         {renderContent()}
       </main>
 
       {FullScreenContent.includes(currentView) ? null : (
-        <footer className="bg-gray-800 p-2 flex justify-around">
+        <footer className="bg-card p-2 flex justify-around border-t">
           <button
             onClick={() => setCurrentView('home')}
             className={`flex flex-col items-center p-2 rounded-lg w-1/3 ${
-              currentView === 'home' ? 'text-lime-400' : 'text-gray-400'
+              currentView === 'home' ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
             <Home />
@@ -372,7 +368,7 @@ export default function DriverView() {
           <button
             onClick={() => setCurrentView('wallet')}
             className={`flex flex-col items-center p-2 rounded-lg w-1/3 ${
-              currentView === 'wallet' ? 'text-lime-400' : 'text-gray-400'
+              currentView === 'wallet' ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
             <Wallet />
@@ -381,7 +377,7 @@ export default function DriverView() {
           <button
             onClick={() => setCurrentView('profile')}
             className={`flex flex-col items-center p-2 rounded-lg w-1/3 ${
-              currentView === 'profile' ? 'text-lime-400' : 'text-gray-400'
+              currentView === 'profile' ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
             <User />
