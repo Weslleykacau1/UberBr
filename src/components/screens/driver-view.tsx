@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 import { AppContext } from '@/context/app-context';
 import {
@@ -19,7 +19,9 @@ import {
   PhoneCall,
   Zap,
   Luggage,
-  ArrowLeft
+  ArrowLeft,
+  X,
+  FileText
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -36,6 +38,13 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import dynamic from 'next/dynamic';
+
+const DynamicMap = dynamic(() => import('@/components/dynamic-map'), {
+    ssr: false,
+    loading: () => <div className="bg-muted w-full h-full flex items-center justify-center"><p>Carregando mapa...</p></div>
+});
 
 
 const driverStats = {
@@ -56,7 +65,21 @@ const weeklyEarningsData = [
   { day: 'Dom', 'Ganhos': 160 },
 ];
 
+const mockRideRequest = {
+    id: 1,
+    passenger: { name: 'Alex', rating: 4.9, avatarUrl: 'https://i.pravatar.cc/150?u=passenger@test.com' },
+    from: 'Av. Bezerra de Menezes, 1850',
+    to: 'Shopping Iguatemi Bosque',
+    distance: '8.2 km',
+    duration: '15 min',
+    price: 'R$ 18,50',
+};
+
 function StatisticsView({ onBack }: { onBack: () => void }) {
+  const openProofOfIncome = () => {
+      window.open('https://placehold.co/800x1100.png', '_blank');
+  };
+
   return (
     <div className="p-4">
       <div className="mb-6">
@@ -100,22 +123,58 @@ function StatisticsView({ onBack }: { onBack: () => void }) {
            </div>
         </div>
       </div>
+       <div className="mt-6">
+            <Button onClick={openProofOfIncome} variant="outline" className="w-full">
+                <FileText className="mr-2" />
+                Comprovante de rendimentos
+            </Button>
+        </div>
     </div>
   );
 }
 
-function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
+function HomeView({ onMenuClick, onConnect, isOnline }: { onMenuClick: () => void, onConnect: () => void, isOnline: boolean }) {
   const [showPreferences, setShowPreferences] = useState(false);
   const [preferences, setPreferences] = useState({ flash: true, comfort: false });
+  const [rideRequest, setRideRequest] = useState<typeof mockRideRequest | null>(null);
+  const [showRideAlert, setShowRideAlert] = useState(false);
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isOnline) {
+      // Simulate receiving a ride request after a delay
+      timer = setTimeout(() => {
+        setRideRequest(mockRideRequest);
+        setShowRideAlert(true);
+      }, 5000); // 5 seconds delay
+    } else {
+        setShowRideAlert(false);
+        setRideRequest(null);
+    }
+    return () => clearTimeout(timer);
+  }, [isOnline]);
 
   const handlePreferenceChange = (key: 'flash' | 'comfort') => {
     setPreferences(prev => ({...prev, [key]: !prev[key]}));
   };
 
+  const handleAcceptRide = () => {
+    setShowRideAlert(false);
+    // Here you would navigate to an active ride screen
+    alert("Corrida aceita! Navegando para o local de partida...");
+  }
+
+  const handleDeclineRide = () => {
+      setShowRideAlert(false);
+      setRideRequest(null);
+  }
+
   return (
     <div className="relative h-full w-full bg-secondary text-foreground">
       <div className="absolute inset-0 z-0">
-        <Image src="https://placehold.co/600x1200.png" layout="fill" objectFit="cover" alt="Map placeholder" data-ai-hint="map city" />
+          <Suspense fallback={<div className="bg-muted w-full h-full flex items-center justify-center"><p>Carregando mapa...</p></div>}>
+            <DynamicMap center={[-3.74, -38.54]} drivers={[{id: 1, name: 'Antônio', rating: 4.8, car: 'Fiat Cronos', distance: '5 min', position: [-3.742, -38.535]}]} userPos={[-3.74, -38.54]} />
+        </Suspense>
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
       </div>
 
@@ -124,7 +183,7 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
           <Menu size={20} />
         </Button>
         <Button className="bg-card text-card-foreground px-6 py-2.5 rounded-full shadow-lg font-bold text-lg">
-          R$0,00 <ChevronDown size={20} className="ml-1" />
+          R${driverStats.todayEarnings.toFixed(2).replace('.',',')} <ChevronDown size={20} className="ml-1" />
         </Button>
       </div>
 
@@ -196,10 +255,58 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
         <div className="w-12 h-1.5 bg-border rounded-full mx-auto mb-4"></div>
         <div className="flex items-center justify-between">
           <Button onClick={() => setShowPreferences(true)} size="icon" variant="ghost" className="rounded-full"><SlidersHorizontal /></Button>
-          <Button className="flex-1 bg-primary text-primary-foreground font-bold text-lg py-3 h-auto rounded-full mx-4">Conectar</Button>
+          <Button onClick={onConnect} className={`flex-1 font-bold text-lg py-3 h-auto rounded-full mx-4 ${isOnline ? 'bg-destructive hover:bg-destructive/90' : 'bg-primary hover:bg-primary/90'} text-primary-foreground`}>{isOnline ? 'Desconectar' : 'Conectar'}</Button>
           <Button size="icon" variant="ghost" className="rounded-full"><History /></Button>
         </div>
       </div>
+
+       {showRideAlert && rideRequest && (
+            <div className="absolute inset-0 bg-black/60 z-20 flex items-end justify-center p-4">
+                <Card className="w-full max-w-lg animate-in slide-in-from-bottom-10 duration-500">
+                    <CardHeader className="p-4">
+                        <div className="flex justify-between items-start">
+                           <div>
+                            <CardTitle className="text-2xl">Nova Solicitação de Corrida!</CardTitle>
+                            <CardDescription>Você tem 30 segundos para aceitar.</CardDescription>
+                           </div>
+                           <Button variant="ghost" size="icon" onClick={handleDeclineRide}><X /></Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0 space-y-4">
+                        <div className="flex items-center space-x-4">
+                           <Avatar className="w-16 h-16 border-2 border-primary">
+                               <AvatarImage src={rideRequest.passenger.avatarUrl} />
+                               <AvatarFallback>{rideRequest.passenger.name[0]}</AvatarFallback>
+                           </Avatar>
+                           <div>
+                               <p className="font-bold text-lg">{rideRequest.passenger.name}</p>
+                               <div className="flex items-center gap-1 text-sm text-yellow-500">
+                                   <Star size={14} className="fill-current" />
+                                   <span>{rideRequest.passenger.rating}</span>
+                               </div>
+                           </div>
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground">PARTIDA</p>
+                            <p>{rideRequest.from}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground">DESTINO</p>
+                            <p>{rideRequest.to}</p>
+                        </div>
+                        <div className="flex justify-between items-center text-center pt-2 border-t">
+                            <div><p className="font-bold text-lg">{rideRequest.distance}</p><p className="text-xs text-muted-foreground">Distância</p></div>
+                             <div><p className="font-bold text-lg">{rideRequest.duration}</p><p className="text-xs text-muted-foreground">Duração</p></div>
+                              <div><p className="font-bold text-lg text-primary">{rideRequest.price}</p><p className="text-xs text-muted-foreground">Ganhos</p></div>
+                        </div>
+                         <div className="flex gap-4 pt-4">
+                            <Button onClick={handleDeclineRide} variant="outline" className="w-full">Rejeitar</Button>
+                            <Button onClick={handleAcceptRide} className="w-full">Aceitar</Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+       )}
     </div>
   );
 }
@@ -275,10 +382,14 @@ export default function DriverView() {
   const [isOnline, setIsOnline] = useState(false);
   const [currentView, setCurrentView] = useState('home');
 
+  const handleConnectToggle = () => {
+    setIsOnline(!isOnline);
+  };
+
   const renderContent = () => {
     switch (currentView) {
       case 'home':
-        return <HomeView onMenuClick={() => setCurrentView('statistics')} />;
+        return <HomeView onMenuClick={() => setCurrentView('statistics')} onConnect={handleConnectToggle} isOnline={isOnline} />;
       case 'statistics':
         return <StatisticsView onBack={() => setCurrentView('home')} />;
       case 'wallet':
@@ -286,7 +397,7 @@ export default function DriverView() {
       case 'profile':
         return <ProfileView />;
       default:
-        return <HomeView onMenuClick={() => setCurrentView('statistics')} />;
+        return <HomeView onMenuClick={() => setCurrentView('statistics')} onConnect={handleConnectToggle} isOnline={isOnline} />;
     }
   };
 
@@ -298,7 +409,7 @@ export default function DriverView() {
       <header className="p-4 bg-card shadow-sm">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
-             {currentView === 'statistics' && (
+             {currentView !== 'home' && (
                 <button onClick={() => setCurrentView('home')} className="mr-2">
                     <ArrowLeft />
                 </button>
@@ -388,3 +499,5 @@ export default function DriverView() {
     </div>
   );
 }
+
+    

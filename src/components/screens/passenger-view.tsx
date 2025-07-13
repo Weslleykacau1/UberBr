@@ -1,106 +1,259 @@
 'use client';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, Suspense } from 'react';
 import { AppContext } from '@/context/app-context';
-import { Search, Calendar, Clock, Car, Package, User, Grid2x2, Home, BarChart2 } from 'lucide-react';
+import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Grid2x2, Home, BarChart2 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import PaymentOption from '@/components/payment-option';
+import dynamic from 'next/dynamic';
 
-const MotorcycleIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M5.5 17.5a2.5 2.5 0 0 0 5 0" />
-        <path d="M15 17.5a2.5 2.5 0 0 0 5 0" />
-        <path d="M15 17.5H5.5l1.5-5H12l4-5h2.5" />
-        <path d="M7 6l2-3h3.5" />
-    </svg>
-);
+const DynamicMap = dynamic(() => import('@/components/dynamic-map'), {
+    ssr: false,
+    loading: () => <div className="bg-muted w-full h-full flex items-center justify-center"><p>Carregando mapa...</p></div>
+});
 
-const SuggestionButton = ({ icon, label }: { icon: React.ReactNode, label: string }) => (
-    <button className="flex flex-col items-center justify-center space-y-2">
-        <div className="bg-primary/10 hover:bg-primary/20 p-4 rounded-lg text-primary">
-            {icon}
-        </div>
-        <span className="text-sm font-medium text-foreground">{label}</span>
-    </button>
-);
 
-export default function PassengerView() {
-    const { user, handleLogout, isDarkMode, toggleDarkMode } = useContext(AppContext);
-    const [activeTab, setActiveTab] = useState('home');
-    
-    if (isDarkMode === undefined) {
-        return null;
+const rideOptions = [
+  { name: 'Corrida X', price: 'R$ 13,90', eta: '5 min', icon: 'https://placehold.co/40x40.png' },
+  { name: 'Comfort', price: 'R$ 18,50', eta: '7 min', icon: 'https://placehold.co/40x40.png' },
+  { name: 'Black', price: 'R$ 25,00', eta: '6 min', icon: 'https://placehold.co/40x40.png' },
+];
+
+function RideRequestView({ from, to, onBack }: { from: string, to: string, onBack: () => void }) {
+    const [step, setStep] = useState(1);
+    const [selectedRide, setSelectedRide] = useState<typeof rideOptions[0] | null>(null);
+    const [paymentMethod, setPaymentMethod] = useState('pix');
+    const [rideConfirmed, setRideConfirmed] = useState(false);
+
+    const fromPosition: [number, number] = [-3.74, -38.54];
+    const toPosition: [number, number] = [-3.76, -38.52];
+
+    const handleSelectRide = (ride: typeof rideOptions[0]) => {
+        setSelectedRide(ride);
+        setStep(2);
     }
 
+    const handleConfirmPayment = () => {
+        setStep(3);
+    }
+
+    const handleConfirmRide = () => {
+        setRideConfirmed(true);
+        // In a real app, this would trigger a request to the backend
+    }
+    
+    if (rideConfirmed) {
+        return (
+             <div className="h-full flex flex-col">
+                <div className="relative flex-grow">
+                    <Suspense fallback={<div>Carregando mapa...</div>}>
+                        <DynamicMap center={fromPosition} rideRequest={{ from: {address: from, position: fromPosition}, to: {address: to, position: toPosition} }} userPos={fromPosition} drivers={[{id: 1, name: 'Antônio', rating: 4.8, car: 'Fiat Cronos', distance: '5 min', position: [-3.742, -38.535]}]}/>
+                    </Suspense>
+                </div>
+                <Card className="rounded-t-2xl rounded-b-none p-4 border-t-4 border-primary shadow-lg">
+                    <CardContent className="p-0">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold text-primary">Aguardando motorista</h2>
+                            <p className="text-muted-foreground mt-2">Encontramos o melhor motorista para você. Ele está a caminho!</p>
+                        </div>
+                        <div className="flex items-center space-x-4 p-4 mt-4 bg-secondary rounded-lg">
+                            <Image src="https://i.pravatar.cc/150?u=driver@test.com" width={60} height={60} alt="Driver" className="rounded-full" />
+                            <div>
+                                <p className="font-bold text-lg">Bruno</p>
+                                <p className="text-sm text-muted-foreground">Chevrolet Onix - ABC-1234</p>
+                                <p className="text-sm font-bold text-primary">4.9 ★</p>
+                            </div>
+                        </div>
+                         <Button onClick={onBack} className="w-full mt-4" variant="outline">Cancelar Corrida</Button>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+
+    return (
+        <div className="h-full flex flex-col">
+            <div className="relative flex-grow">
+                 <Suspense fallback={<div>Carregando mapa...</div>}>
+                    <DynamicMap center={fromPosition} rideRequest={{ from: {address: from, position: fromPosition}, to: {address: to, position: toPosition} }} />
+                </Suspense>
+            </div>
+            <Card className="rounded-t-2xl rounded-b-none p-4 border-t-4 border-primary shadow-lg">
+                <CardContent className="p-0">
+                    <button onClick={onBack} className="absolute top-4 left-4 p-2 bg-background rounded-full shadow-md"><X size={20}/></button>
+                    {step === 1 && (
+                        <div>
+                            <h3 className="text-xl font-bold text-center mb-4">Opções de Viagem</h3>
+                            <div className="space-y-3">
+                                {rideOptions.map((ride, index) => (
+                                    <button key={index} onClick={() => handleSelectRide(ride)} className="w-full flex items-center justify-between p-3 bg-secondary rounded-lg text-left hover:bg-muted">
+                                        <div className="flex items-center space-x-4">
+                                            <Image src={ride.icon} width={40} height={40} alt={ride.name} data-ai-hint="car icon" />
+                                            <div>
+                                                <p className="font-bold">{ride.name}</p>
+                                                <p className="text-sm text-muted-foreground">{ride.eta}</p>
+                                            </div>
+                                        </div>
+                                        <p className="font-bold text-lg">{ride.price}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {step === 2 && selectedRide && (
+                        <div>
+                            <h3 className="text-xl font-bold text-center mb-4">Pagamento</h3>
+                             <div className="flex items-center justify-between p-3 bg-secondary rounded-lg mb-4">
+                                <div className="flex items-center space-x-4">
+                                    <Image src={selectedRide.icon} width={40} height={40} alt={selectedRide.name} data-ai-hint="car icon"/>
+                                    <div>
+                                        <p className="font-bold">{selectedRide.name}</p>
+                                        <p className="text-sm text-muted-foreground">{selectedRide.eta}</p>
+                                    </div>
+                                </div>
+                                <p className="font-bold text-lg">{selectedRide.price}</p>
+                            </div>
+                            <div className="flex space-x-3 mb-6">
+                                <PaymentOption icon={<DollarSign/>} label="PIX" selected={paymentMethod === 'pix'} onClick={() => setPaymentMethod('pix')} />
+                                <PaymentOption icon={<CreditCard/>} label="Cartão" selected={paymentMethod === 'card'} onClick={() => setPaymentMethod('card')} />
+                            </div>
+                            <Button onClick={handleConfirmPayment} className="w-full text-lg h-12">Confirmar Pagamento</Button>
+                        </div>
+                    )}
+                    {step === 3 && selectedRide && (
+                         <div>
+                            <h3 className="text-xl font-bold text-center mb-4">Confirmar Corrida</h3>
+                            <div className="bg-secondary p-4 rounded-lg space-y-3">
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Partida</span>
+                                    <span className="font-semibold text-right">{from}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Destino</span>
+                                    <span className="font-semibold text-right">{to}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Veículo</span>
+                                    <span className="font-semibold">{selectedRide.name}</span>
+                                </div>
+                                 <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Pagamento</span>
+                                    <span className="font-semibold capitalize">{paymentMethod === 'pix' ? 'PIX' : 'Cartão de Crédito'}</span>
+                                </div>
+                                <div className="flex justify-between text-lg font-bold text-primary pt-2 border-t border-border">
+                                    <span>Total</span>
+                                    <span>{selectedRide.price}</span>
+                                </div>
+                            </div>
+                            <Button onClick={handleConfirmRide} className="w-full text-lg h-12 mt-4 bg-primary hover:bg-primary/90">
+                                <Send className="mr-2"/> Confirmar e Chamar
+                            </Button>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+
+function HomeView({ onSearch }: { onSearch: (from: string, to: string) => void }) {
+    const [fromAddress, setFromAddress] = useState('Av. Bezerra de Menezes, 1850');
+    const [toAddress, setToAddress] = useState('');
+
+    const handleSearch = () => {
+        if (fromAddress && toAddress) {
+            onSearch(fromAddress, toAddress);
+        }
+    }
+
+    return (
+        <div className="p-4 space-y-6">
+            <Card className="p-4 rounded-xl shadow-lg">
+                <CardContent className="p-0 space-y-3">
+                    <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <input
+                            type="text"
+                            value={fromAddress}
+                            onChange={(e) => setFromAddress(e.target.value)}
+                            placeholder="Endereço de partida"
+                            className="w-full bg-muted border-none rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                    </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                        <input
+                            type="text"
+                            value={toAddress}
+                            onChange={(e) => setToAddress(e.target.value)}
+                            placeholder="Aonde você quer ir?"
+                            className="w-full bg-muted border-none rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                    </div>
+                     <Button onClick={handleSearch} className="w-full text-lg h-12">Buscar corrida</Button>
+                </CardContent>
+            </Card>
+
+            <div className="space-y-3">
+                <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-secondary cursor-pointer">
+                    <div className="bg-secondary p-2 rounded-full"><Home size={20} className="text-muted-foreground" /></div>
+                    <div>
+                        <p className="font-semibold">Casa</p>
+                        <p className="text-sm text-muted-foreground">Rua das Flores, 123</p>
+                    </div>
+                </div>
+                 <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-secondary cursor-pointer">
+                    <div className="bg-secondary p-2 rounded-full"><BarChart2 size={20} className="text-muted-foreground" /></div>
+                    <div>
+                        <p className="font-semibold">Trabalho</p>
+                        <p className="text-sm text-muted-foreground">Av. Principal, 456</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-primary/10 text-primary rounded-xl p-4 flex items-center justify-between overflow-hidden relative shadow-lg">
+                <div className="z-10">
+                    <h3 className="font-bold text-lg">Viaje com segurança</h3>
+                    <p className="text-sm opacity-90 mt-1">Nossos motoristas são verificados.</p>
+                </div>
+                <div className="absolute right-0 bottom-0 w-1/2 h-full opacity-20">
+                     <User size={80} className="absolute right-0 -bottom-2"/>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+
+export default function PassengerView() {
+    const { user, handleLogout } = useContext(AppContext);
+    const [activeTab, setActiveTab] = useState('home');
+    const [isRequestingRide, setIsRequestingRide] = useState(false);
+    const [fromAddress, setFromAddress] = useState('');
+    const [toAddress, setToAddress] = useState('');
+    
+    const handleSearch = (from: string, to: string) => {
+        setFromAddress(from);
+        setToAddress(to);
+        setIsRequestingRide(true);
+    };
+
+    const handleBackToHome = () => {
+        setIsRequestingRide(false);
+        setFromAddress('');
+        setToAddress('');
+    };
+
     const renderContent = () => {
+        if (isRequestingRide) {
+            return <RideRequestView from={fromAddress} to={toAddress} onBack={handleBackToHome} />;
+        }
+
         switch (activeTab) {
             case 'home':
-                return (
-                    <div className="p-4 space-y-6">
-                        {/* Search and Schedule */}
-                        <div className="flex items-center space-x-2">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-                                <input
-                                    type="text"
-                                    placeholder="Aonde você está indo?"
-                                    className="w-full bg-card border-border shadow-sm rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Recent Destinations */}
-                        <div className="space-y-3">
-                            <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-secondary cursor-pointer">
-                                <div className="bg-secondary p-2 rounded-full"><Clock size={20} className="text-muted-foreground" /></div>
-                                <div>
-                                    <p className="font-semibold">Rua Torreon, 220 - Potira II</p>
-                                    <p className="text-sm text-muted-foreground">Caucaia - CE, 61650-375</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-4 p-2 rounded-lg hover:bg-secondary cursor-pointer">
-                                <div className="bg-secondary p-2 rounded-full"><Clock size={20} className="text-muted-foreground" /></div>
-                                <div>
-                                    <p className="font-semibold">Terminal Rodoviário Eng. João Thomé</p>
-                                    <p className="text-sm text-muted-foreground">Av. Deputado Oswaldo Studart, 761 - Fátima</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Business Profile Card */}
-                         <div className="bg-blue-600 text-white rounded-xl p-4 flex items-center justify-between overflow-hidden relative shadow-lg">
-                            <div className="z-10">
-                                <h3 className="font-bold text-lg">Your business profile</h3>
-                                <Button variant="secondary" className="mt-3 bg-white/20 hover:bg-white/30 text-white font-semibold py-1.5 px-4 rounded-full text-sm h-auto">Ver vantagens</Button>
-                            </div>
-                            <div className="absolute right-0 bottom-0 w-1/2 h-full">
-                                <Image src="https://placehold.co/300x200.png" layout="fill" objectFit="cover" alt="Business profile illustration" data-ai-hint="business travel" className="opacity-80" />
-                            </div>
-                        </div>
-
-                        {/* Suggestions */}
-                        <div>
-                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xl font-bold">Sugestões</h3>
-                                <button className="text-sm font-semibold text-primary">Ver tudo</button>
-                            </div>
-                            <div className="grid grid-cols-4 gap-4 text-center">
-                                <SuggestionButton icon={<Car size={24} />} label="Viagem" />
-                                <SuggestionButton icon={<Package size={24} />} label="Envios" />
-                                <SuggestionButton icon={<MotorcycleIcon />} label="Moto" />
-                                <SuggestionButton icon={<Calendar className="text-red-400" />} label="Reserve" />
-                            </div>
-                        </div>
-                        
-                        {/* Daily Savings */}
-                        <div>
-                             <h3 className="text-xl font-bold mb-3">Economize todos os dias</h3>
-                             <div className="bg-card rounded-xl h-24 w-full shadow-sm">
-                                 <Image src="https://placehold.co/600x200.png" layout="responsive" width={600} height={200} objectFit="cover" alt="Daily savings banner" data-ai-hint="promotional banner" className="rounded-xl"/>
-                             </div>
-                        </div>
-
-                    </div>
-                );
+                return <HomeView onSearch={handleSearch} />;
             case 'options': return <div className="p-4 text-center">Opções</div>;
             case 'activity': return <div className="p-4 text-center">Atividade</div>;
             case 'account': return <div className="p-4 text-center">Conta</div>;
@@ -117,19 +270,25 @@ export default function PassengerView() {
 
     return (
         <div className="h-full flex flex-col bg-background text-foreground">
-            <header className="p-4 flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Olá, {user?.name || 'Passageiro'}!</h1>
-                <Button onClick={handleLogout} variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10">Sair</Button>
-            </header>
+            {!isRequestingRide && (
+                <header className="p-4 flex justify-between items-center">
+                    <h1 className="text-2xl font-bold">Olá, {user?.name || 'Passageiro'}!</h1>
+                    <Button onClick={handleLogout} variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10">Sair</Button>
+                </header>
+            )}
             <main className="flex-grow overflow-y-auto">
                 {renderContent()}
             </main>
-            <footer className="bg-card p-2 flex justify-around border-t shadow-[0_-2px_5px_-3px_rgba(0,0,0,0.05)]">
-                <NavButton tabName="home" icon={<Home />} label="Início" />
-                <NavButton tabName="options" icon={<Grid2x2 />} label="Opções" />
-                <NavButton tabName="activity" icon={<BarChart2 />} label="Atividade" />
-                <NavButton tabName="account" icon={<User />} label="Conta" />
-            </footer>
+             {!isRequestingRide && (
+                <footer className="bg-card p-2 flex justify-around border-t shadow-[0_-2px_5px_-3px_rgba(0,0,0,0.05)]">
+                    <NavButton tabName="home" icon={<Home />} label="Início" />
+                    <NavButton tabName="options" icon={<Grid2x2 />} label="Opções" />
+                    <NavButton tabName="activity" icon={<BarChart2 />} label="Atividade" />
+                    <NavButton tabName="account" icon={<User />} label="Conta" />
+                </footer>
+             )}
         </div>
     );
 }
+
+    
