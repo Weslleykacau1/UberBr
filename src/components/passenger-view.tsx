@@ -12,6 +12,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sidebar } from './sidebar'
+import { Menu } from 'lucide-react'
 
 const rideOptions = [
   {
@@ -35,7 +38,7 @@ const fareDetails = {
   total: 12.50,
 }
 
-export function PassengerView() {
+export function PassengerView({ toggleView }: { toggleView: () => void }) {
   const [selectedRide, setSelectedRide] = useState(rideOptions[0].name)
 
   return (

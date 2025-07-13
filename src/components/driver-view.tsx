@@ -27,7 +27,7 @@ const quickActions = [
 ]
 
 
-export function DriverView() {
+export function DriverView({ toggleView }: { toggleView: () => void }) {
   const [isOnline, setIsOnline] = useState(true)
 
   return (
@@ -111,6 +111,9 @@ export function DriverView() {
             ))}
           </div>
       </footer>
+       <button onClick={toggleView} className="text-primary p-4">
+            Voltar para Passageiro
+       </button>
     </div>
   )
 }

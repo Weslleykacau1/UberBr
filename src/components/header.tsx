@@ -15,6 +15,7 @@ export function Header() {
                 </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-80">
+                {/* The toggleView prop will be available here when I implement it */}
                 <Sidebar />
             </SheetContent>
         </Sheet>

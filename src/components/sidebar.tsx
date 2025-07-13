@@ -13,7 +13,6 @@ const menuItems = [
 
 const accountItems = [
     { icon: User, text: "Perfil", subtext: "Editar informações pessoais" },
-    { icon: Car, text: "Modo Motorista", subtext: "Alternar para motorista" },
 ]
 
 export function Sidebar() {
@@ -71,6 +70,19 @@ export function Sidebar() {
                             </a>
                         </li>
                     ))}
+                     <li>
+                        {/* The toggleView prop will be passed to this onClick when implemented */}
+                        <button className="w-full flex items-center gap-4 p-2 rounded-lg hover:bg-secondary">
+                            <div className="p-2 bg-secondary rounded-lg">
+                                <Car className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="flex-grow text-left">
+                                <p className="font-medium text-sm">Modo Passageiro</p>
+                                <p className="text-xs text-muted-foreground">Alternar para passageiro</p>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                        </button>
+                    </li>
                 </ul>
                 <Separator className="my-4" />
                 <ul>
