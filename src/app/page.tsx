@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useContext, useEffect } from 'react';
@@ -7,9 +8,10 @@ import WelcomeScreen from '@/components/screens/welcome-screen';
 import PassengerView from '@/components/screens/passenger-view';
 import DriverView from '@/components/screens/driver-view';
 import AdminDashboard from '@/components/screens/admin-dashboard';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
-  const { screen, user, setScreen } = useContext(AppContext);
+  const { screen, user, setScreen, isDarkMode } = useContext(AppContext);
   const router = useRouter();
 
   useEffect(() => {
@@ -38,6 +40,19 @@ export default function Home() {
     }
   };
   
+  // Display a loading skeleton until the theme is determined on the client
+  if (isDarkMode === undefined) {
+    return (
+      <div className="container mx-auto max-w-lg p-0 h-screen bg-background">
+        <div className="p-4 space-y-4">
+            <Skeleton className="h-12 w-1/3" />
+            <Skeleton className="h-48 w-full" />
+            <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
+    )
+  }
+
   return (
       <div className="container mx-auto max-w-lg p-0 h-screen">
         {renderScreen()}

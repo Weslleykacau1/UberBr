@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
@@ -49,9 +50,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // This effect runs once on the client to set the initial theme state
-    // This avoids hydration errors
-    setIsDarkMode(document.documentElement.classList.contains('dark'));
+    const isDark = document.documentElement.classList.contains('dark');
+    setIsDarkMode(isDark);
   }, []);
 
   const handleLogin = (email: string, password?: string, rememberMe?: boolean) => {
