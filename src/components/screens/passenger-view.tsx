@@ -27,6 +27,10 @@ export default function PassengerView() {
   const [suggestion, setSuggestion] = useState('');
   const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
 
+  if (isDarkMode === undefined) {
+    return null; // or a loading skeleton
+  }
+
   const getTripSuggestions = async () => {
       setIsLoadingSuggestion(true);
       setShowSuggestionModal(true);

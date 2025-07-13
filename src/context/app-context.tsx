@@ -22,7 +22,7 @@ type AppContextType = {
   setScreen: (screen: Screen) => void;
   user: User | null;
   users: User[];
-  isDarkMode: boolean;
+  isDarkMode: boolean | undefined;
   toggleDarkMode: () => void;
   handleLogin: (email: string, password?: string) => void;
   handleRegister: (newUser: Omit<User, 'id' | 'status'>) => void;
@@ -44,13 +44,11 @@ const initialUsers: User[] = [
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [screen, setScreen] = useState<Screen>('welcome');
   const [user, setUser] = useState<User | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false); // Default to false, will be set correctly on client
+  const [isDarkMode, setIsDarkMode] = useState<boolean | undefined>(undefined);
   const [users, setUsers] = useState<User[]>(initialUsers);
   const router = useRouter();
 
   useEffect(() => {
-    // This effect runs only on the client, after the initial render.
-    // It correctly syncs the state with the DOM, avoiding hydration mismatch.
     setIsDarkMode(document.documentElement.classList.contains('dark'));
   }, []);
 

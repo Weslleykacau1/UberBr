@@ -13,6 +13,10 @@ export default function AdminDashboard() {
     const [adminPassword, setAdminPassword] = useState('');
     const [error, setError] = useState('');
     
+    if (isDarkMode === undefined) {
+        return null; // or a loading skeleton
+    }
+
     const pendingUsers = users.filter(u => u.status === 'pending');
     const approvedPassengers = users.filter(u => u.role === 'passenger' && u.status === 'approved');
     const approvedDrivers = users.filter(u => u.role === 'driver' && u.status === 'approved');
