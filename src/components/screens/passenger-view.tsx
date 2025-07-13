@@ -1,14 +1,18 @@
+
 'use client';
 import React, { useState, useContext, useEffect, Suspense } from 'react';
 import { AppContext } from '@/context/app-context';
-import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Home, BarChart2, Repeat, Star, LifeBuoy, ChevronRight, Edit, LogOut, MessageSquare } from 'lucide-react';
+import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Home, BarChart2, Repeat, Star, LifeBuoy, ChevronRight, LogOut, MessageSquare, Moon, Bell, Globe, Fingerprint, Shield, Eye, KeyRound } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PaymentOption from '@/components/payment-option';
 import dynamic from 'next/dynamic';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 
 const DynamicMap = dynamic(() => import('@/components/dynamic-map'), {
     ssr: false,
@@ -309,46 +313,122 @@ function ActivityView() {
     );
 }
 
-function AccountView({ user, onLogout }: { user: any, onLogout: () => void }) {
-  return (
-    <div className="p-4 space-y-8 bg-background h-full">
-      <div>
-        <h2 className="text-2xl font-bold mb-6">Minha Conta</h2>
+const SettingsItem = ({ icon, title, description, control }: { icon: React.ReactNode, title: string, description: string, control: React.ReactNode }) => (
+    <div className="flex items-center justify-between py-4">
         <div className="flex items-center space-x-4">
-          <Avatar className="w-20 h-20 border-4 border-primary">
-            <AvatarImage src={`https://i.pravatar.cc/150?u=${user?.email}`} alt={user?.name} />
-            <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
-          </Avatar>
-          <div>
-            <h3 className="text-xl font-bold">{user?.name}</h3>
-            <p className="text-muted-foreground">{user?.email}</p>
-          </div>
+            <div className="bg-secondary p-3 rounded-full">
+                {icon}
+            </div>
+            <div>
+                <p className="font-semibold">{title}</p>
+                <p className="text-sm text-muted-foreground">{description}</p>
+            </div>
         </div>
-      </div>
+        {control}
+    </div>
+);
 
-      <div className="space-y-3">
-        <button className="w-full flex items-center justify-between p-4 bg-card rounded-lg text-left shadow-sm hover:bg-muted">
-            <div className="flex items-center space-x-4">
-                <LifeBuoy className="text-primary" />
-                <span className="font-semibold">Central de Ajuda</span>
-            </div>
-            <ChevronRight className="text-muted-foreground" />
-        </button>
-        <button className="w-full flex items-center justify-between p-4 bg-card rounded-lg text-left shadow-sm hover:bg-muted">
-            <div className="flex items-center space-x-4">
-                <MessageSquare className="text-primary" />
-                <span className="font-semibold">Falar com o Suporte</span>
-            </div>
-            <ChevronRight className="text-muted-foreground" />
-        </button>
-      </div>
 
-      <div className="pt-4">
-         <Button onClick={onLogout} variant="outline" className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground">
-            <LogOut className="mr-2" />
-            Sair da Conta
-        </Button>
-      </div>
+function AccountView({ user, onLogout }: { user: any, onLogout: () => void }) {
+  const { isDarkMode, toggleDarkMode } = useContext(AppContext);
+  const [notifications, setNotifications] = useState(true);
+  const [location, setLocation] = useState(true);
+  const [biometric, setBiometric] = useState(false);
+  const [shareData, setShareData] = useState(true);
+  const [profileVisibility, setProfileVisibility] = useState(false);
+
+  return (
+    <div className="p-4 space-y-6 bg-background h-full">
+        <h2 className="text-2xl font-bold">Perfil</h2>
+      
+        <Card>
+            <CardHeader>
+                <CardTitle>Configurações</CardTitle>
+            </CardHeader>
+            <CardContent className='pt-0'>
+                <SettingsItem
+                    icon={<Moon size={20} className="text-primary" />}
+                    title="Modo Escuro"
+                    description="Interface otimizada para motoristas"
+                    control={<Switch checked={isDarkMode} onCheckedChange={toggleDarkMode} />}
+                />
+                <Separator />
+                <SettingsItem
+                    icon={<Bell size={20} className="text-primary" />}
+                    title="Notificações"
+                    description="Receber alertas de viagens e promoções"
+                    control={<Switch checked={notifications} onCheckedChange={setNotifications} />}
+                />
+                <Separator />
+                <SettingsItem
+                    icon={<MapPin size={20} className="text-primary" />}
+                    title="Compartilhar Localização"
+                    description="Permitir rastreamento durante viagens"
+                    control={<Switch checked={location} onCheckedChange={setLocation} />}
+                />
+                 <Separator />
+                <SettingsItem
+                    icon={<Globe size={20} className="text-primary" />}
+                    title="Idioma"
+                    description="Selecione seu idioma preferido"
+                    control={
+                        <Select defaultValue="pt-br">
+                            <SelectTrigger className="w-[120px]">
+                                <SelectValue placeholder="Idioma" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="pt-br">Português</SelectItem>
+                                <SelectItem value="en-us">English</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    }
+                />
+                 <Separator />
+                 <SettingsItem
+                    icon={<Fingerprint size={20} className="text-primary" />}
+                    title="Autenticação Biométrica"
+                    description="Proteger alterações sensíveis"
+                    control={<Switch checked={biometric} onCheckedChange={setBiometric} />}
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Privacidade e Segurança</CardTitle>
+            </CardHeader>
+            <CardContent className='pt-0'>
+                <SettingsItem
+                    icon={<Shield size={20} className="text-primary" />}
+                    title="Compartilhar dados de viagem"
+                    description="Permitir análise para melhorar o serviço"
+                    control={<Switch checked={shareData} onCheckedChange={setShareData} />}
+                />
+                 <Separator />
+                <SettingsItem
+                    icon={<Eye size={20} className="text-primary" />}
+                    title="Visibilidade do perfil"
+                    description="Mostrar perfil para outros usuários"
+                    control={<Switch checked={profileVisibility} onCheckedChange={setProfileVisibility} />}
+                />
+            </CardContent>
+        </Card>
+
+        <div className="space-y-3">
+            <Button variant="outline" className="w-full justify-start p-6 text-base">
+                <LifeBuoy className="mr-4 text-primary" /> Central de Ajuda
+            </Button>
+            <Button variant="outline" className="w-full justify-start p-6 text-base">
+                <MessageSquare className="mr-4 text-primary" /> Falar com o Suporte
+            </Button>
+        </div>
+
+        <div className="pt-4">
+            <Button onClick={onLogout} variant="destructive" className="w-full text-base py-6">
+                <LogOut className="mr-2" />
+                Sair da Conta
+            </Button>
+        </div>
     </div>
   );
 }
@@ -399,7 +479,10 @@ export default function PassengerView() {
             {!isRequestingRide && activeTab !== 'account' && (
                 <header className="p-4 flex justify-between items-center">
                     <h1 className="text-2xl font-bold">Olá, {user?.name || 'Passageiro'}!</h1>
-                    <Button onClick={handleLogout} variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10">Sair</Button>
+                    <Avatar className="w-10 h-10 border-2 border-primary">
+                        <AvatarImage src={`https://i.pravatar.cc/150?u=${user?.email}`} alt={user?.name} />
+                        <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
+                    </Avatar>
                 </header>
             )}
             <main className="flex-grow overflow-y-auto">
@@ -415,3 +498,6 @@ export default function PassengerView() {
         </div>
     );
 }
+
+
+    
