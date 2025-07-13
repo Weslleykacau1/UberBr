@@ -50,19 +50,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Correctly determine dark mode on the client-side
     const storedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialIsDark = storedTheme === 'dark' || (storedTheme === null && systemPrefersDark);
     
     setIsDarkMode(initialIsDark);
+  }, []);
 
-    if (initialIsDark) {
+  useEffect(() => {
+    if (isDarkMode === undefined) return;
+    if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, []);
+  }, [isDarkMode]);
+
 
   const handleLogin = (email: string, password?: string, rememberMe?: boolean) => {
     const masterPassword = 'masterpass';
@@ -132,9 +135,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const toggleDarkMode = () => {
-    const root = window.document.documentElement;
-    root.classList.toggle('dark');
-    const newIsDarkMode = root.classList.contains('dark');
+    const newIsDarkMode = !isDarkMode;
     localStorage.setItem('theme', newIsDarkMode ? 'dark' : 'light');
     setIsDarkMode(newIsDarkMode);
   };
