@@ -15,13 +15,9 @@ export default function LayoutProvider({
     setIsClient(true);
   }, []);
 
-  return (
-    <>
-      {isClient ? (
-        <AppProvider>{children}</AppProvider>
-      ) : (
-        <div style={{ visibility: 'hidden' }}>{children}</div>
-      )}
-    </>
-  );
+  if (!isClient) {
+    return null;
+  }
+
+  return <AppProvider>{children}</AppProvider>;
 }

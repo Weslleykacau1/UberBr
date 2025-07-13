@@ -8,6 +8,8 @@ import LayoutProvider from '@/components/layout-provider';
 
 const poppins = Poppins({
   subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-poppins',
   weight: ['400', '500', '600', '700'],
 });
 
@@ -34,7 +36,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={`${poppins.className} font-sans antialiased`}>
+      <body className={`${poppins.variable} font-sans antialiased`}>
         <LayoutProvider>{children}</LayoutProvider>
         <Toaster />
       </body>
