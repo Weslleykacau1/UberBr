@@ -23,10 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning={true}>
       <head>
         {/* The inline script that caused hydration errors has been removed. */}
-      </head>
+      </head> 
       <body className={`${poppins.variable} font-sans antialiased`}>
         <LayoutProvider>{children}</LayoutProvider>
         <Toaster />
