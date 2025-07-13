@@ -40,7 +40,6 @@ export default function Home() {
     }
   };
   
-  // Display a loading skeleton until the theme is determined on the client
   if (isDarkMode === undefined) {
     return (
       <div className="container mx-auto max-w-lg p-0 h-screen bg-background">

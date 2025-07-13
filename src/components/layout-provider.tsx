@@ -15,7 +15,6 @@ export default function LayoutProvider({
     setIsClient(true);
   }, []);
 
-  // By returning null until we are on the client, we prevent hydration mismatches.
   if (!isClient) {
     return null;
   }
