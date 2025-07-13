@@ -1,10 +1,17 @@
 'use client';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Shield, Sun, Moon, LogOut, Bell, User, Car, CheckCircle, XCircle, FileText } from 'lucide-react';
 import { AppContext } from '@/context/app-context';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function AdminDashboard() {
-    const { users, handleLogout, isDarkMode, toggleDarkMode, handleUpdateUsers } = useContext(AppContext);
+    const { user, users, handleLogout, isDarkMode, toggleDarkMode, handleUpdateUsers } = useContext(AppContext);
+    
+    const [userToRemove, setUserToRemove] = useState<number | null>(null);
+    const [adminPassword, setAdminPassword] = useState('');
+    const [error, setError] = useState('');
     
     const pendingUsers = users.filter(u => u.status === 'pending');
     const approvedPassengers = users.filter(u => u.role === 'passenger' && u.status === 'approved');
@@ -13,8 +20,26 @@ export default function AdminDashboard() {
     const handleApproval = (userId: number, newStatus: 'approved' | 'rejected') => { 
         handleUpdateUsers(users.map(u => u.id === userId ? { ...u, status: newStatus } : u)); 
     };
-    const handleRemove = (userId: number) => { 
-        handleUpdateUsers(users.filter(u => u.id !== userId)); 
+
+    const attemptRemove = (userId: number) => {
+        setUserToRemove(userId);
+    };
+
+    const confirmRemove = () => {
+        if (!user || !userToRemove) return;
+
+        if (adminPassword === user.password) {
+            handleUpdateUsers(users.filter(u => u.id !== userToRemove));
+            closeDialog();
+        } else {
+            setError('Senha incorreta. A exclusão foi cancelada.');
+        }
+    };
+    
+    const closeDialog = () => {
+        setUserToRemove(null);
+        setAdminPassword('');
+        setError('');
     };
 
     const openDocument = (url?: string) => {
@@ -58,16 +83,42 @@ export default function AdminDashboard() {
                 <div className="mb-8">
                     <h3 className="text-xl font-semibold mb-3 flex items-center text-lime-400"><User className="mr-2"/> Passageiros Aprovados ({approvedPassengers.length})</h3>
                     <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-                        {approvedPassengers.map(p => (<div key={p.id} className="flex justify-between items-center bg-gray-700 p-3 rounded-md"><div><p className="font-bold">{p.name}</p><p className="text-sm text-gray-400">{p.email}</p></div><button onClick={() => handleRemove(p.id)} className="text-red-500 hover:text-red-400">Remover</button></div>))}
+                        {approvedPassengers.map(p => (<div key={p.id} className="flex justify-between items-center bg-gray-700 p-3 rounded-md"><div><p className="font-bold">{p.name}</p><p className="text-sm text-gray-400">{p.email}</p></div><button onClick={() => attemptRemove(p.id)} className="text-red-500 hover:text-red-400">Remover</button></div>))}
                     </div>
                 </div>
                 <div>
                     <h3 className="text-xl font-semibold mb-3 flex items-center text-lime-400"><Car className="mr-2"/> Motoristas Aprovados ({approvedDrivers.length})</h3>
                     <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-                        {approvedDrivers.map(d => (<div key={d.id} className="flex justify-between items-center bg-gray-700 p-3 rounded-md"><div><p className="font-bold">{d.name}</p><p className="text-sm text-gray-400">{d.email}</p></div><button onClick={() => handleRemove(d.id)} className="text-red-500 hover:text-red-400">Remover</button></div>))}
+                        {approvedDrivers.map(d => (<div key={d.id} className="flex justify-between items-center bg-gray-700 p-3 rounded-md"><div><p className="font-bold">{d.name}</p><p className="text-sm text-gray-400">{d.email}</p></div><button onClick={() => attemptRemove(d.id)} className="text-red-500 hover:text-red-400">Remover</button></div>))}
                     </div>
                 </div>
             </main>
+
+            <AlertDialog open={userToRemove !== null} onOpenChange={(isOpen) => !isOpen && closeDialog()}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirmação Necessária</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Para remover este usuário, por favor, insira sua senha de administrador. Esta ação não pode ser desfeita.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="space-y-2">
+                        <Label htmlFor="admin-password">Senha do Administrador</Label>
+                        <Input
+                            id="admin-password"
+                            type="password"
+                            value={adminPassword}
+                            onChange={(e) => setAdminPassword(e.target.value)}
+                            placeholder="********"
+                        />
+                         {error && <p className="text-red-500 text-sm">{error}</p>}
+                    </div>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={closeDialog}>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmRemove}>Confirmar Remoção</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
