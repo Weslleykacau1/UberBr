@@ -51,8 +51,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     // Correctly determine dark mode on the client-side
-    const isDark = document.documentElement.classList.contains('dark');
-    setIsDarkMode(isDark);
+    const theme = localStorage.getItem('theme');
+    if (theme) {
+        setIsDarkMode(theme === 'dark');
+    } else {
+        setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
   }, []);
 
   const handleLogin = (email: string, password?: string, rememberMe?: boolean) => {
