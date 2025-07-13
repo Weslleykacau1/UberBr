@@ -46,7 +46,7 @@ export default function MapComponent({ center, drivers, userPos, rideRequest }: 
     const routePositions = rideRequest ? [rideRequest.from.position, rideRequest.to.position] : [];
 
     return (
-        <MapContainer key={JSON.stringify(center)} center={center} zoom={14} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+        <MapContainer center={center} zoom={14} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
