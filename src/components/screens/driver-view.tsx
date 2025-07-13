@@ -18,6 +18,7 @@ import {
   SlidersHorizontal,
   ClipboardCheck,
   ArrowLeft,
+  History,
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -132,7 +133,7 @@ function HomeView({ onMenuClick }: { onMenuClick: () => void }) {
         <div className="flex items-center justify-between">
           <button className="p-3"><SlidersHorizontal size={28} /></button>
           <button className="flex-1 bg-yellow-400 text-black font-bold text-lg py-3 rounded-full mx-4">Conectar</button>
-          <button className="p-3"><ClipboardCheck size={28} /></button>
+          <button className="p-3"><History size={28} /></button>
         </div>
       </div>
     </div>
@@ -322,5 +323,3 @@ export default function DriverView() {
     </div>
   );
 }
-
-    
