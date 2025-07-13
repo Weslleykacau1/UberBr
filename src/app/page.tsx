@@ -44,17 +44,25 @@ export default function Home() {
     return (
       <div className="container mx-auto max-w-lg p-0 h-screen bg-background">
         <div className="p-4 space-y-4">
-            <Skeleton className="h-12 w-1/3" />
-            <Skeleton className="h-48 w-full" />
-            <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-12 w-1/3" />
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-24 w-full" />
         </div>
       </div>
-    )
+    );
   }
 
   return (
-      <div className="container mx-auto max-w-lg p-0 h-screen">
-        {renderScreen()}
-      </div>
+    <div className="container mx-auto max-w-lg p-0 h-screen">
+      {isDarkMode === undefined ? (
+        <div className="p-4 space-y-4">
+          <Skeleton className="h-12 w-1/3" />
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      ) : (
+        renderScreen()
+      )}
+    </div>
   );
 }
