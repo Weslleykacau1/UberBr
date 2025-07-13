@@ -49,6 +49,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
+    // This effect runs only on the client, after the initial render.
+    // It correctly syncs the state with the DOM, avoiding hydration mismatch.
     const root = window.document.documentElement;
     setIsDarkMode(root.classList.contains('dark'));
   }, []);
@@ -117,8 +119,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const toggleDarkMode = () => {
     const root = window.document.documentElement;
     root.classList.toggle('dark');
-    localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light');
-    setIsDarkMode(root.classList.contains('dark'));
+    const newIsDarkMode = root.classList.contains('dark');
+    localStorage.setItem('theme', newIsDarkMode ? 'dark' : 'light');
+    setIsDarkMode(newIsDarkMode);
   };
 
   const value = {
