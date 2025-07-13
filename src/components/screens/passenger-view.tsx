@@ -2,10 +2,10 @@
 'use client';
 import React, { useState, useContext, useEffect, Suspense } from 'react';
 import { AppContext } from '@/context/app-context';
-import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Home, BarChart2, Repeat, Star, LifeBuoy, ChevronRight, LogOut, MessageSquare, Moon, Bell, Globe, Fingerprint, Shield, Eye, KeyRound } from 'lucide-react';
+import { Search, MapPin, DollarSign, CreditCard, X, Send, User, Home, BarChart2, Repeat, Star, LifeBuoy, ChevronRight, LogOut, MessageSquare, Moon, Bell, Globe, Fingerprint, Shield, Eye, KeyRound, Car, Calendar, Map } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import PaymentOption from '@/components/payment-option';
 import dynamic from 'next/dynamic';
 import { Badge } from '../ui/badge';
@@ -35,7 +35,8 @@ const mockRideHistory = [
     price: 'R$ 18,50',
     driver: { name: 'Bruno', car: 'Chevrolet Onix' },
     status: 'Concluída',
-    icon: 'https://placehold.co/40x40.png'
+    icon: 'https://placehold.co/40x40.png',
+    mapImage: 'https://placehold.co/600x400.png'
   },
   {
     id: 2,
@@ -45,7 +46,8 @@ const mockRideHistory = [
     price: 'R$ 25,00',
     driver: { name: 'Lúcia', car: 'Hyundai HB20' },
     status: 'Concluída',
-    icon: 'https://placehold.co/40x40.png'
+    icon: 'https://placehold.co/40x40.png',
+    mapImage: 'https://placehold.co/600x400.png'
   },
   {
     id: 3,
@@ -55,7 +57,8 @@ const mockRideHistory = [
     price: 'R$ 15,00',
     driver: { name: 'Carlos', car: 'Fiat Cronos' },
     status: 'Cancelada',
-    icon: 'https://placehold.co/40x40.png'
+    icon: 'https://placehold.co/40x40.png',
+    mapImage: 'https://placehold.co/600x400.png'
   },
 ];
 
@@ -267,48 +270,67 @@ function HomeView({ onSearch }: { onSearch: (from: string, to: string) => void }
 }
 
 function ActivityView() {
+    const totalSpent = mockRideHistory.reduce((acc, ride) => ride.status === 'Concluída' ? acc + parseFloat(ride.price.replace('R$ ', '').replace(',', '.')) : acc, 0).toFixed(2);
+    const completedRides = mockRideHistory.filter(ride => ride.status === 'Concluída');
+    const firstRide = completedRides[0];
+    const otherRides = completedRides.slice(1);
+
     return (
         <div className="p-4 space-y-4">
-            <h2 className="text-2xl font-bold">Atividade</h2>
-            {mockRideHistory.map((ride) => (
-                <Card key={ride.id} className="overflow-hidden">
-                    <CardContent className="p-4 flex flex-col gap-4">
-                        <div className="flex items-start justify-between">
+            <h2 className="text-2xl font-bold">Suas Atividades</h2>
+            <div className="grid grid-cols-2 grid-rows-auto gap-4">
+                {firstRide && (
+                    <Card className="col-span-2 row-span-2 relative overflow-hidden group">
+                        <Image src={firstRide.mapImage} data-ai-hint="map road" alt="map of last ride" layout="fill" objectFit="cover" className="opacity-20 group-hover:opacity-30 transition-opacity"/>
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+                        <CardContent className="relative flex flex-col justify-end h-full p-4">
+                           <Badge variant={firstRide.status === 'Concluída' ? 'default' : 'destructive'} className={`absolute top-4 right-4 ${firstRide.status === 'Concluída' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{firstRide.status}</Badge>
+                           <div>
+                            <p className="text-sm text-muted-foreground font-semibold">ÚLTIMA CORRIDA</p>
+                            <p className="text-2xl font-bold">{firstRide.to}</p>
+                            <div className="flex justify-between items-end mt-2">
+                                <div>
+                                    <p className="text-sm text-muted-foreground">{firstRide.driver.name} • {firstRide.date}</p>
+                                </div>
+                                <p className="text-xl font-bold text-primary">{firstRide.price}</p>
+                            </div>
+                           </div>
+                        </CardContent>
+                    </Card>
+                )}
+                <Card className="col-span-1">
+                    <CardHeader className="p-4 pb-2">
+                        <CardTitle className="text-base flex items-center gap-2 text-muted-foreground"><DollarSign size={18}/> Gasto Total</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                        <p className="text-3xl font-bold">R${totalSpent.replace('.',',')}</p>
+                    </CardContent>
+                </Card>
+                 <Card className="col-span-1">
+                    <CardHeader className="p-4 pb-2">
+                        <CardTitle className="text-base flex items-center gap-2 text-muted-foreground"><Car size={18}/> Total de Corridas</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0">
+                        <p className="text-3xl font-bold">{completedRides.length}</p>
+                    </CardContent>
+                </Card>
+                
+                {otherRides.map(ride => (
+                     <Card key={ride.id} className="col-span-2">
+                        <CardContent className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <Image src={ride.icon} width={40} height={40} alt="Ride icon" data-ai-hint="car icon" className="rounded-lg"/>
+                                <div className="bg-secondary p-3 rounded-lg"><Car size={20} className="text-primary"/></div>
                                 <div>
                                     <p className="font-bold">{ride.to}</p>
                                     <p className="text-sm text-muted-foreground">{ride.date}</p>
                                 </div>
                             </div>
-                            <Badge variant={ride.status === 'Concluída' ? 'default' : 'destructive'} className={`${ride.status === 'Concluída' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{ride.status}</Badge>
-                        </div>
-                         <div className="border-t pt-4 space-y-3 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">De</span>
-                                <span>{ride.from}</span>
-                            </div>
-                             <div className="flex justify-between">
-                                <span className="text-muted-foreground">Para</span>
-                                <span>{ride.to}</span>
-                            </div>
-                             <div className="flex justify-between">
-                                <span className="text-muted-foreground">Motorista</span>
-                                <span>{ride.driver.name} ({ride.driver.car})</span>
-                            </div>
-                             <div className="flex justify-between font-bold">
-                                <span>Total (PIX)</span>
-                                <span>{ride.price}</span>
-                            </div>
-                        </div>
+                            <p className="font-bold text-lg">{ride.price}</p>
+                        </CardContent>
+                     </Card>
+                ))}
 
-                         <div className="flex gap-2 pt-4 border-t">
-                            <Button variant="outline" className="w-full"><Repeat size={16}/> Pedir de novo</Button>
-                            <Button variant="outline" className="w-full"><Star size={16}/> Avaliar</Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
+            </div>
         </div>
     );
 }
@@ -500,4 +522,5 @@ export default function PassengerView() {
 }
 
 
+    
     
